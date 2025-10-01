@@ -1,0 +1,4 @@
+title: as2built
+description: Site statique BIM et Construction
+permalink: /:title/
+markdown: kramdown
