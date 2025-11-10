@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AS2Built : Hub BIM Algérie</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chargement des icônes Lucide pour les illustrations -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Couleurs personnalisées AS2Built */
+            --as2-blue: #0077b6;
+            --as2-blue-dark: #003366;
+            --as2-dark: #121212;
+            --as2-dark-light: #1e1e1e;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--as2-dark);
+            color: #E0E0E0;
+            line-height: 1.6;
+        }
+        .text-as2-blue { color: var(--as2-blue); }
+        .bg-as2-blue { background-color: var(--as2-blue); }
+        .hover:bg-as2-blue-dark:hover { background-color: var(--as2-blue-dark); }
+        .border-as2-blue { border-color: var(--as2-blue); }
+        .border-as2-blue-dark { border-color: var(--as2-blue-dark); }
+        .bg-as2-dark-light { background-color: var(--as2-dark-light); }
+        .bg-as2-dark { background-color: var(--as2-dark); }
+        .active-link {
+            border-bottom: 2px solid var(--as2-blue);
+            color: var(--as2-blue);
+        }
+        .page-screen {
+            display: none;
+            padding-top: 5rem; /* Espace pour la barre de navigation fixe */
+            min-height: 100vh;
+        }
+        .page-screen.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Barre de Navigation Fixe -->
+    <nav class="fixed top-0 left-0 w-full bg-as2-dark border-b border-gray-800 z-50 shadow-xl">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <a href="#" onclick="showScreen('home')" class="flex items-center space-x-3">
+                    <!-- Logo Simulé -->
+                    <div class="h-8 w-8 text-as2-blue">
+                        <svg viewBox="0 0 50 50" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M25 5 L5 45 H45 Z M25 15 L35 35 H15 Z M25 25 L32 39 H18 Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <span class="text-2xl font-extrabold text-white">AS2<span class="text-as2-blue">BUILT</span></span>
+                </a>
+
+                <!-- Liens Desktop -->
+                <div class="hidden md:flex space-x-6 text-lg font-medium">
+                    <a href="#" onclick="showScreen('home')" class="nav-link p-2 transition-colors duration-200 hover:text-as2-blue" data-screen="home">Home</a>
+                    <a href="#" onclick="showScreen('about')" class="nav-link p-2 transition-colors duration-200 hover:text-as2-blue" data-screen="about">About</a>
+                    <a href="#" onclick="showScreen('services')" class="nav-link p-2 transition-colors duration-200 hover:text-as2-blue" data-screen="services">Services</a>
+                    <a href="#" onclick="showScreen('projects')" class="nav-link p-2 transition-colors duration-200 hover:text-as2-blue" data-screen="projects">Projects</a>
+                    <a href="#" onclick="showScreen('why-bim')" class="nav-link p-2 transition-colors duration-200 hover:text-as2-blue" data-screen="why-bim">Why BIM?</a>
+                    <a href="#" onclick="showScreen('blog')" class="nav-link p-2 transition-colors duration-200 hover:text-as2-blue" data-screen="blog">Blog</a>
+                    <a href="#" onclick="showScreen('contact')" class="nav-link p-2 transition-colors duration-200 hover:text-as2-blue" data-screen="contact">Contact</a>
+                </div>
+
+                <!-- Bouton Mobile Menu -->
+                <button id="mobile-menu-button" class="md:hidden text-white focus:outline-none">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Menu Mobile (Affiché/Caché par JS) -->
+        <div id="mobile-menu" class="hidden md:hidden">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 flex flex-col items-center bg-as2-dark-light border-t border-gray-700">
+                <a href="#" onclick="showScreen('home')" class="nav-link block px-3 py-2 rounded-md text-base font-medium transition-colors hover:text-as2-blue" data-screen="home">Home</a>
+                <a href="#" onclick="showScreen('about')" class="nav-link block px-3 py-2 rounded-md text-base font-medium transition-colors hover:text-as2-blue" data-screen="about">About</a>
+                <a href="#" onclick="showScreen('services')" class="nav-link block px-3 py-2 rounded-md text-base font-medium transition-colors hover:text-as2-blue" data-screen="services">Services</a>
+                <a href="#" onclick="showScreen('projects')" class="nav-link block px-3 py-2 rounded-md text-base font-medium transition-colors hover:text-as2-blue" data-screen="projects">Projects</a>
+                <a href="#" onclick="showScreen('why-bim')" class="nav-link block px-3 py-2 rounded-md text-base font-medium transition-colors hover:text-as2-blue" data-screen="why-bim">Why BIM?</a>
+                <a href="#" onclick="showScreen('blog')" class="nav-link block px-3 py-2 rounded-md text-base font-medium transition-colors hover:text-as2-blue" data-screen="blog">Blog</a>
+                <a href="#" onclick="showScreen('contact')" class="nav-link block px-3 py-2 rounded-md text-base font-medium transition-colors hover:text-as2-blue" data-screen="contact">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenu Principal des Écrans -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 pt-8">
+
+        <!-- Écran Home -->
+        <div id="screen-home" class="page-screen active">
+
+            <header class="text-center my-12 md:my-20">
+                <h1 class="text-4xl md:text-5xl font-bold text-as2-blue">
+                    AS2Built : Le Hub BIM pour la performance BTP en Algérie.
+                </h1>
+                <p class="text-xl text-gray-300 mt-4 max-w-3xl mx-auto">
+                    La plateforme qui connecte les experts certifiés et les entreprises pour des projets optimisés.
+                </p>
+
+                <!-- Illustration BIM symbolique (Icône) -->
+                <div class="mt-10 mb-16 text-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="mx-auto text-as2-blue">
+                        <path d="M12 2v6"/><path d="M12 18v4"/><path d="M4.93 4.93l2.83 2.83"/><path d="M16.24 16.24l2.83 2.83"/><path d="M2 12h6"/><path d="M18 12h4"/><path d="M4.93 19.07l2.83-2.83"/><path d="M16.24 7.76l2.83-2.83"/><circle cx="12" cy="12" r="2"/><path d="M14 6H9.5a2.5 2.5 0 0 0 0 5H12"/><path d="M10 18v-6h4"/></svg>
+                </div>
+            </header>
+
+            <div class="grid lg:grid-cols-2 gap-8 my-16">
+                <!-- Bloc Entreprise -->
+                <div class="bg-as2-dark-light p-8 rounded-lg shadow-2xl border-2 border-as2-blue-dark">
+                    <h2 class="text-3xl font-extrabold text-as2-blue mb-4 flex items-center">
+                        <i data-lucide="building" class="w-8 h-8 mr-3"></i> Espace Entreprise
+                    </h2>
+                    <p class="text-lg text-gray-300 mb-4">
+                        Nous sommes le Hub de Compétences BIM qui fiabilise vos projets de construction.
+                    </p>
+                    <ul class="text-gray-400 space-y-3 mb-6 list-none pl-0">
+                        <li class="flex items-start">
+                            <i data-lucide="check-circle" class="w-5 h-5 mr-3 mt-1 text-green-400 flex-shrink-0"></i>
+                            <span>Nous résolvons le manque de coordination structurée en vous offrant des solutions d'Audit et d'Optimisation pour vos processus internes.</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-lucide="check-circle" class="w-5 h-5 mr-3 mt-1 text-green-400 flex-shrink-0"></i>
+                            <span>Nous vous connectons instantanément à un réseau d'experts BIM certifiés pour réduire les coûts de non-qualité (erreurs) et les retards sur vos chantiers.</span>
+                        </li>
+                    </ul>
+                    <button onclick="showLogin('enterprise')" class="w-full bg-as2-dark text-as2-blue border border-as2-blue font-bold py-3 px-6 rounded-lg text-lg hover:bg-as2-dark-light transition-colors shadow-lg mt-4">
+                        Accéder à l'Espace Entreprise (Audit & Recrutement)
+                    </button>
+                </div>
+
+                <!-- Bloc Individuel/Expert -->
+                <div class="bg-as2-dark-light p-8 rounded-lg shadow-2xl border-2 border-as2-blue-dark">
+                    <h2 class="text-3xl font-extrabold text-as2-blue mb-4 flex items-center">
+                        <i data-lucide="user-check" class="w-8 h-8 mr-3"></i> Espace Expert BIM
+                    </h2>
+                    <p class="text-lg text-gray-300 mb-4">
+                        Nous sommes le catalyseur de votre expertise professionnelle.
+                    </p>
+                    <ul class="text-gray-400 space-y-3 mb-6 list-none pl-0">
+                        <li class="flex items-start">
+                            <i data-lucide="award" class="w-5 h-5 mr-3 mt-1 text-yellow-400 flex-shrink-0"></i>
+                            <span>Nous offrons des programmes de Formation certifiants axés sur la méthodologie BIM et les standards internationaux.</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-lucide="briefcase" class="w-5 h-5 mr-3 mt-1 text-yellow-400 flex-shrink-0"></i>
+                            <span>Nous vous assurons un placement qualifié en vous connectant directement aux entreprises qui ont besoin de vos compétences.</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-lucide="trending-up" class="w-5 h-5 mr-3 mt-1 text-yellow-400 flex-shrink-0"></i>
+                            <span>Nous transformons votre déficit de maîtrise en une expertise locale de premier plan.</span>
+                        </li>
+                    </ul>
+                    <button onclick="showLogin('expert')" class="w-full bg-as2-blue text-white font-bold py-3 px-6 rounded-lg text-lg hover:bg-as2-blue-dark transition-colors shadow-lg mt-4">
+                        Accéder à l'Espace Expert (Formation & Emploi)
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8 my-16 md:my-24 text-center">
+                <div class="bg-as2-dark-light p-8 rounded-lg shadow-xl border border-gray-800 transform hover:scale-[1.02] transition-transform duration-300">
+                    <i data-lucide="graduation-cap" class="w-12 h-12 mx-auto text-as2-blue"></i>
+                    <h3 class="text-2xl font-semibold mt-4 mb-2">Formation Certifiante</h3>
+                    <p class="text-gray-400">Montez en compétence avec des formations labellisées AS2Built et adaptées au marché algérien.</p>
+                </div>
+                <div class="bg-as2-dark-light p-8 rounded-lg shadow-xl border border-gray-800 transform hover:scale-[1.02] transition-transform duration-300">
+                    <i data-lucide="users" class="w-12 h-12 mx-auto text-as2-blue"></i>
+                    <h3 class="text-2xl font-semibold mt-4 mb-2">Coordination du Marché</h3>
+                    <p class="text-gray-400">Accédez à notre hub d'experts validés ou déposez votre CV pour trouver des missions exclusives.</p>
+                </div>
+                <div class="bg-as2-dark-light p-8 rounded-lg shadow-xl border border-gray-800 transform hover:scale-[1.02] transition-transform duration-300">
+                    <i data-lucide="settings" class="w-12 h-12 mx-auto text-as2-blue"></i>
+                    <h3 class="text-2xl font-semibold mt-4 mb-2">Audit & Solutions BIM</h3>
+                    <p class="text-gray-400">Évaluez votre maturité BIM et laissez-nous vous guider vers l'optimisation de vos processus.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Écran About -->
+        <div id="screen-about" class="page-screen">
+            <h1 class="text-4xl font-extrabold text-white mb-10 border-b pb-4 border-gray-700">À Propos d'AS2Built</h1>
+
+            <div class="space-y-12">
+                <!-- Notre Mission -->
+                <section class="bg-as2-dark-light p-8 rounded-xl shadow-lg border-l-4 border-as2-blue">
+                    <h2 class="text-3xl font-bold text-as2-blue mb-4 flex items-center">
+                        <i data-lucide="target" class="w-6 h-6 mr-3"></i> Notre Mission
+                    </h2>
+                    <p class="text-lg text-gray-300 mb-4">
+                        Notre mission est d'adresser et de résoudre le déficit critique de personnel qualifié et le manque de coordination structurée qui freinent actuellement la performance et l'innovation dans le secteur du Bâtiment et des Travaux Publics (BTPH) en Algérie.
+                    </p>
+                    <p class="text-lg text-gray-300">
+                        À travers notre Hub BIM, nous visons à fiabiliser les projets (en réduisant les erreurs et les coûts de non-qualité mesurables, estimés entre <span class="text-as2-blue font-bold">5% et 15%</span> du coût total du projet) et à assurer la modernisation accélérée de l'ensemble de l'écosystème de construction national.
+                    </p>
+                </section>
+
+                <!-- Notre Vision -->
+                <section class="bg-as2-dark-light p-8 rounded-xl shadow-lg border-l-4 border-as2-blue">
+                    <h2 class="text-3xl font-bold text-as2-blue mb-4 flex items-center">
+                        <i data-lucide="eye" class="w-6 h-6 mr-3"></i> Notre Vision
+                    </h2>
+                    <p class="text-lg text-gray-300">
+                        Devenir la référence nationale incontournable en tant que Hub de Compétences BIM intégré et le leader de l'optimisation des projets BTP en Algérie, avec un déploiement et une expansion régionale (e-learning et plateforme de matching) dans un pays cible de la zone MENA d'ici trois ans. Nous voulons être reconnus comme l'unique entité capable de garantir la pleine maîtrise exécutive des projets.
+                    </p>
+                </section>
+
+                <!-- Notre Approche Intégrée -->
+                <section class="bg-as2-dark-light p-8 rounded-xl shadow-lg border-l-4 border-as2-blue">
+                    <h2 class="text-3xl font-bold text-as2-blue mb-6 flex items-center">
+                        <i data-lucide="workflow" class="w-6 h-6 mr-3"></i> Notre Approche Intégrée : Le Hub End-to-End
+                    </h2>
+                    <p class="text-lg text-gray-300 mb-8">
+                        L'approche d'AS2Built est un modèle de Hub intégré unique, construit sur trois piliers fondamentaux pour répondre au fossé entre l'ambition BIM et la capacité d'exécution dans le secteur du BTPH algérien.
+                    </p>
+
+                    <div class="space-y-8">
+                        <!-- Pilier 1 -->
+                        <div class="p-6 bg-as2-dark border border-gray-700 rounded-lg">
+                            <h3 class="text-xl font-semibold text-as2-blue flex items-center mb-2">
+                                <span class="text-4xl mr-3">🎓</span> 1. Formation d'Experts Certifiés (Compétence)
+                            </h3>
+                            <p class="text-gray-400">Ce pilier répond au déficit critique de compétence technique sur le marché.</p>
+                            <ul class="mt-3 text-sm text-gray-500 space-y-1">
+                                <li>**Action :** Proposer des programmes certifiants axés sur la méthodologie BIM et les standards internationaux.</li>
+                                <li>**Objectif :** Former la prochaine génération de Coordinateurs et BIM Managers certifiés.</li>
+                            </ul>
+                        </div>
+
+                        <!-- Pilier 2 -->
+                        <div class="p-6 bg-as2-dark border border-gray-700 rounded-lg">
+                            <h3 class="text-xl font-semibold text-as2-blue flex items-center mb-2">
+                                <span class="text-4xl mr-3">🤝</span> 2. Coordination du Marché (Matching Qualifié)
+                            </h3>
+                            <p class="text-gray-400">Ce pilier agit comme un marché organisé et un passeport qualité, reliant les compétences vérifiées à la demande.</p>
+                            <ul class="mt-3 text-sm text-gray-500 space-y-1">
+                                <li>**Action :** Mettre en place une plateforme de matching pour connecter les experts BIM (freelancers certifiés) avec les entreprises (pour des missions ponctuelles ou longues).</li>
+                                <li>**Objectif :** Créer un marché de l'emploi organisé et qualifier la mise en relation, réduisant la dépendance aux consultants étrangers.</li>
+                            </ul>
+                        </div>
+
+                        <!-- Pilier 3 -->
+                        <div class="p-6 bg-as2-dark border border-gray-700 rounded-lg">
+                            <h3 class="text-xl font-semibold text-as2-blue flex items-center mb-2">
+                                <span class="text-4xl mr-3">📈</span> 3. Audit & Solutions (Optimisation)
+                            </h3>
+                            <p class="text-gray-400">Ce pilier se concentre sur la maximisation du Retour sur Investissement (ROI) de l'adoption du BIM pour les entreprises clientes.</p>
+                            <ul class="mt-3 text-sm text-gray-500 space-y-1">
+                                <li>**Action :** Offrir du conseil stratégique pour l'intégration de Systèmes de Gestion BIM (SGB), auditer les pratiques internes, et assister l'intégration de logiciels.</li>
+                                <li>**Objectif :** Optimiser les processus internes de l'entreprise pour garantir une réduction mesurable des erreurs et des coûts de non-qualité (estimés entre 5% et 15% du coût total).</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p class="mt-8 text-sm italic text-gray-500">
+                        Ce Modèle Hub Intégré est la différenciation clé d'AS2Built, car il relie la Formation, la Mise en Relation Qualifiée, et l'Optimisation des Outils sous une seule méthodologie, garantissant ainsi une performance complète.
+                    </p>
+                </section>
+            </div>
+        </div>
+
+        <!-- Écran Services -->
+        <div id="screen-services" class="page-screen">
+            <h1 class="text-4xl font-extrabold text-white mb-10 border-b pb-4 border-gray-700">Nos Services BIM Détaillés</h1>
+
+            <!-- Pilier 1: Formation -->
+            <section class="mb-12">
+                <h2 class="text-3xl font-bold text-as2-blue mb-6 flex items-center">
+                    <i data-lucide="book-open" class="w-6 h-6 mr-3"></i> 🎓 Pilier 1 : Formation d'Experts Certifiés
+                </h2>
+                <p class="text-gray-300 mb-6">Ce pilier fournit les compétences nécessaires pour exécuter les services listés dans les sections suivantes.</p>
+                <div class="overflow-x-auto bg-as2-dark-light rounded-xl shadow-lg">
+                    <table class="min-w-full divide-y divide-gray-700">
+                        <thead class="bg-as2-blue-dark">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Type de Formation</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Compétences Acquises</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-800">
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-as2-blue flex items-center">
+                                    <i data-lucide="bar-chart-3" class="w-4 h-4 mr-2"></i> BIM Manager (Niveau 2)
+                                </td>
+                                <td class="px-6 py-4 whitespace-normal text-sm text-gray-400">
+                                    Gestion du processus BIM, Convention BIM, Design Optimization, Virtual Commissioning, 4D & 5D Analysis, Value Engineering.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-as2-blue flex items-center">
+                                    <i data-lucide="layers-3d" class="w-4 h-4 mr-2"></i> BIM Coordinator (Niveau 1)
+                                </td>
+                                <td class="px-6 py-4 whitespace-normal text-sm text-gray-400">
+                                    Modélisation 3D (Architectural, Structural, MEP), Clash Detection & Resolution, Quantities Scheduling.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-as2-blue flex items-center">
+                                    <i data-lucide="sun" class="w-4 h-4 mr-2"></i> Spécialisation Énergétique BIM
+                                </td>
+                                <td class="px-6 py-4 whitespace-normal text-sm text-gray-400">
+                                    Energy Optimization, Daylighting Analysis, Energy Analysis/Modeling, Sustainable Materials, Building Massing/Orientation.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Pilier 2 & 3: Services d'Exécution -->
+            <section class="mb-12">
+                <h2 class="text-3xl font-bold text-as2-blue mb-6 flex items-center">
+                    <i data-lucide="package-check" class="w-6 h-6 mr-3"></i> 🤝 Pilier 2 & 3 : Services d'Exécution BIM
+                </h2>
+                <p class="text-gray-300 mb-8">
+                    Ces piliers offrent l'exécution des services BIM listés ci-dessous, soit par l'entreprise (Audit), soit via un expert du Hub (Coordination/Matching).
+                </p>
+
+                <div class="grid md:grid-cols-3 gap-8">
+                    <!-- Catégorie 1: Modélisation et Coordination (Technique) -->
+                    <div class="p-6 bg-as2-dark-light border border-gray-700 rounded-lg shadow-md">
+                        <h3 class="text-xl font-semibold text-white mb-3 flex items-center">
+                            <i data-lucide="hard-hat" class="w-5 h-5 mr-2 text-red-400"></i> 1. Modélisation et Coordination
+                        </h3>
+                        <ul class="text-sm text-gray-400 space-y-2 list-disc pl-5">
+                            <li>Modélisation 3D (Architectural, Structural, MEP).</li>
+                            <li>Clash Detection & Resolution (Détection de conflits).</li>
+                            <li>Design Optimization & Virtual Commissioning (Simulation virtuelle).</li>
+                        </ul>
+                    </div>
+
+                    <!-- Catégorie 2: Services d'Analyse et de Performance (Optimisation) -->
+                    <div class="p-6 bg-as2-dark-light border border-gray-700 rounded-lg shadow-md">
+                        <h3 class="text-xl font-semibold text-white mb-3 flex items-center">
+                            <i data-lucide="trending-up" class="w-5 h-5 mr-2 text-green-400"></i> 2. Analyse et Performance
+                        </h3>
+                        <ul class="text-sm text-gray-400 space-y-2 list-disc pl-5">
+                            <li>Energy Optimization / Modeling / Analysis.</li>
+                            <li>Daylighting Analysis (Éclairage naturel).</li>
+                            <li>Building Orientation & Building Massing.</li>
+                            <li>Sustainable Materials (Sélection de matériaux durables).</li>
+                            <li>Value Engineering (Analyse de la valeur).</li>
+                        </ul>
+                    </div>
+
+                    <!-- Catégorie 3: Services de Gestion de Projet (4D & 5D) -->
+                    <div class="p-6 bg-as2-dark-light border border-gray-700 rounded-lg shadow-md">
+                        <h3 class="text-xl font-semibold text-white mb-3 flex items-center">
+                            <i data-lucide="dollar-sign" class="w-5 h-5 mr-2 text-yellow-400"></i> 3. Gestion de Projet (4D & 5D)
+                        </h3>
+                        <ul class="text-sm text-gray-400 space-y-2 list-disc pl-5">
+                            <li>4D & 5D PROFITABILITY ANALYSIS.</li>
+                            <li>Construction Sequencing & Simulation (4D).</li>
+                            <li>Quantity Scheduling (Métrés) & Project Cost Analysis (5D).</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Écran Projects -->
+        <div id="screen-projects" class="page-screen">
+            <h1 class="text-4xl font-extrabold text-white mb-10 border-b pb-4 border-gray-700">Nos Projets & Études de Cas BIM</h1>
+            <p class="text-lg text-gray-300 mb-10">
+                L'expertise AS2Built en action. Découvrez comment nos solutions ont fiabilisé et optimisé des projets complexes dans le BTP algérien.
+            </p>
+
+            <div class="grid lg:grid-cols-3 gap-8">
+
+                <!-- Projet 1: Optimisation et Audit 5D -->
+                <div class="bg-as2-dark-light rounded-xl shadow-xl overflow-hidden">
+                    <!-- Placeholder d'image avec icône -->
+                    <div class="h-48 bg-gray-900 flex items-center justify-center relative">
+                         <i data-lucide="hospital" class="w-16 h-16 text-as2-blue opacity-50 absolute"></i>
+                        <span class="text-sm text-gray-500 z-10 p-2 bg-gray-900/50 rounded">Audit 5D : Rendu BIM Structure & MEP</span>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold text-as2-blue mb-2">Centre Hospitalier Régional - Audit 5D</h3>
+                        <p class="text-sm text-gray-400 mb-4">
+                            **Service Clé :** Audit 5D (Coût & Quantités) et Analyse de Valeur.
+                        </p>
+                        <p class="text-gray-300 mb-4 text-sm">
+                            **Problème :** Incohérences majeures entre les métrés traditionnels et les modèles de conception, menant à un dépassement de budget potentiel de 12%.
+                        </p>
+                        <ul class="text-sm text-gray-400 space-y-2 list-none pl-0">
+                            <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 mr-2 text-green-400"></i> Réduction des coûts de 8% par Value Engineering BIM.</li>
+                            <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 mr-2 text-green-400"></i> Fiabilisation du Quantity Scheduling via le modèle 5D.</li>
+                            <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 mr-2 text-green-400"></i> Gain de 4 semaines sur l'approvisionnement.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Projet 2: Coordination Technique -->
+                <div class="bg-as2-dark-light rounded-xl shadow-xl overflow-hidden">
+                    <!-- Placeholder d'image avec icône -->
+                    <div class="h-48 bg-gray-900 flex items-center justify-center relative">
+                        <i data-lucide="crane" class="w-16 h-16 text-as2-blue opacity-50 absolute"></i>
+                        <span class="text-sm text-gray-500 z-10 p-2 bg-gray-900/50 rounded">Coordination : Modèle BIM Résidentiel en Coupe</span>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold text-as2-blue mb-2">Tour Résidentielle R+15 - Coordination</h3>
+                        <p class="text-sm text-gray-400 mb-4">
+                            **Service Clé :** Coordination multi-disciplinaire et Clash Detection/Resolution.
+                        </p>
+                        <p class="text-gray-300 mb-4 text-sm">
+                            **Problème :** Multiples interférences structurelles/MEP non résolues sur les plans 2D classiques.
+                        </p>
+                        <ul class="text-sm text-gray-400 space-y-2 list-none pl-0">
+                            <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 mr-2 text-green-400"></i> 100% des clashes majeurs résolus en amont (Phase Design).</li>
+                            <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 mr-2 text-green-400"></i> Simulation 4D pour optimiser le séquençage de la construction.</li>
+                            <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 mr-2 text-green-400"></i> Réduction des travaux de correction sur site.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Projet 3: As-Built et Facility Management (FM) -->
+                <div class="bg-as2-dark-light rounded-xl shadow-xl overflow-hidden">
+                    <!-- Placeholder d'image avec icône -->
+                    <div class="h-48 bg-gray-900 flex items-center justify-center relative">
+                         <i data-lucide="factory" class="w-16 h-16 text-as2-blue opacity-50 absolute"></i>
+                        <span class="text-sm text-gray-500 z-10 p-2 bg-gray-900/50 rounded">FM : Rendu Extérieur d'une Installation Industrielle</span>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold text-as2-blue mb-2">Usine Agro-alimentaire - As-Built FM</h3>
+                        <p class="text-sm text-gray-400 mb-4">
+                            **Service Clé :** Modélisation As-Built pour la gestion des installations (FM).
+                        </p>
+                        <p class="text-gray-300 mb-4 text-sm">
+                            **Problème :** Documentation papier obsolète pour la maintenance et la gestion des actifs.
+                        </p>
+                        <ul class="text-sm text-gray-400 space-y-2 list-none pl-0">
+                            <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 mr-2 text-green-400"></i> Création d'un modèle As-Built précis (Jumeau Numérique Statique).</li>
+                            <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 mr-2 text-green-400"></i> Intégration des données d'inventaire et de maintenance (7D BIM).</li>
+                            <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 mr-2 text-green-400"></i> Optimisation des cycles de maintenance des équipements critiques.</li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Écran Why BIM? -->
+        <div id="screen-why-bim" class="page-screen">
+            <h1 class="text-4xl font-extrabold text-white mb-10 border-b pb-4 border-gray-700">Pourquoi Adopter le BIM ? La Garantie AS2Built</h1>
+            <p class="text-lg text-gray-300 mb-10 max-w-4xl">
+                Le Building Information Modeling (BIM) n'est pas un simple logiciel. C'est une méthodologie qui transforme la gestion de l'information pour garantir la performance financière et l'excellence opérationnelle de vos projets BTP.
+            </p>
+
+            <div class="grid lg:grid-cols-2 gap-10">
+
+                <!-- Bloc 1: Maîtrise des Coûts et Sécurisation du Projet -->
+                <div class="bg-as2-dark-light p-8 rounded-xl shadow-2xl border-l-4 border-red-500">
+                    <h2 class="text-3xl font-bold text-red-400 mb-4 flex items-center">
+                        <i data-lucide="shield-check" class="w-6 h-6 mr-3"></i> 🛡️ Maîtrise des Coûts & Sécurisation
+                    </h2>
+                    <p class="text-gray-300 mb-6">
+                        Le BIM par AS2Built est votre police d'assurance contre les imprévus coûteux du chantier.
+                    </p>
+                    <ul class="space-y-4 text-gray-400">
+                        <li class="flex items-start">
+                            <i data-lucide="clover" class="w-5 h-5 mr-3 mt-1 text-red-500 flex-shrink-0"></i>
+                            <div>
+                                <strong class="text-white">Réduction des Erreurs (Clash Detection) :</strong> Identification et résolution des conflits entre disciplines (structure, MEP, architecture) en phase de conception, évitant les surcoûts de modification en phase d'exécution.
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-lucide="wallet" class="w-5 h-5 mr-3 mt-1 text-red-500 flex-shrink-0"></i>
+                            <div>
+                                <strong class="text-white">Fiabilité des Quantités (5D BIM) :</strong> Extraction automatique et précise des métrés (Quantities Scheduling) pour des appels d'offres sans surprise et un contrôle budgétaire rigoureux.
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-lucide="timer" class="w-5 h-5 mr-3 mt-1 text-red-500 flex-shrink-0"></i>
+                            <div>
+                                <strong class="text-white">Anticipation des Délais (4D BIM) :</strong> Simulation de la séquence de construction pour identifier les goulots d'étranglement et optimiser le planning, réduisant le risque de retard.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Bloc 2: Performance Opérationnelle et Durabilité -->
+                <div class="bg-as2-dark-light p-8 rounded-xl shadow-2xl border-l-4 border-green-500">
+                    <h2 class="text-3xl font-bold text-green-400 mb-4 flex items-center">
+                        <i data-lucide="activity" class="w-6 h-6 mr-3"></i> 🚀 Performance Opérationnelle & ROI
+                    </h2>
+                    <p class="text-gray-300 mb-6">
+                        Le BIM augmente la valeur à long terme de l'actif, bien au-delà de la phase de construction.
+                    </p>
+                    <ul class="space-y-4 text-gray-400">
+                        <li class="flex items-start">
+                            <i data-lucide="leaf" class="w-5 h-5 mr-3 mt-1 text-green-500 flex-shrink-0"></i>
+                            <div>
+                                <strong class="text-white">Optimisation Énergétique (6D BIM) :</strong> Utilisation du modèle pour simuler la performance énergétique (Energy Analysis & Daylighting), garantissant des bâtiments plus durables et moins coûteux à exploiter.
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-lucide="hard-drive" class="w-5 h-5 mr-3 mt-1 text-green-500 flex-shrink-0"></i>
+                            <div>
+                                <strong class="text-white">Facility Management (FM/7D BIM) :</strong> Livrer un modèle As-Built pour la gestion des installations, facilitant la maintenance, l'inventaire des actifs et la réduction des coûts du cycle de vie.
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-lucide="handshake" class="w-5 h-5 mr-3 mt-1 text-green-500 flex-shrink-0"></i>
+                            <div>
+                                <strong class="text-white">Collaboration Améliorée :</strong> Le modèle centralisé sert de source unique de vérité, améliorant la communication entre tous les acteurs du projet (maître d'ouvrage, architecte, bureaux d'études, entreprises).
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Écran Blog -->
+        <div id="screen-blog" class="page-screen">
+            <h1 class="text-4xl font-extrabold text-white mb-10 border-b pb-4 border-gray-700">Blog & Actualités BIM en Algérie</h1>
+            <p class="text-lg text-gray-300 mb-10">
+                Restez à jour sur les meilleures pratiques BIM, les nouvelles technologies et les tendances du BTPH en Algérie et dans la région MENA.
+            </p>
+
+            <div class="grid lg:grid-cols-3 gap-8">
+                <!-- Article 1: Formation -->
+                <div class="bg-as2-dark-light rounded-xl shadow-xl overflow-hidden transform hover:translate-y-[-4px] transition-transform duration-300">
+                    <div class="p-6">
+                        <span class="text-sm font-semibold text-as2-blue uppercase flex items-center mb-2">
+                            <i data-lucide="graduation-cap" class="w-4 h-4 mr-2"></i> Formation
+                        </span>
+                        <h3 class="text-2xl font-bold text-white mb-2">Les secrets d'un Coordinateur BIM certifié</h3>
+                        <p class="text-gray-400 mb-4 text-sm">
+                            Le rôle du Coordinateur BIM est critique. Découvrez les compétences clés enseignées dans nos programmes certifiants pour sécuriser les projets.
+                        </p>
+                        <a href="#" class="text-as2-blue hover:text-as2-blue-dark text-sm font-medium flex items-center">
+                            Lire l'article <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Article 2: Impact -->
+                <div class="bg-as2-dark-light rounded-xl shadow-xl overflow-hidden transform hover:translate-y-[-4px] transition-transform duration-300">
+                    <div class="p-6">
+                        <span class="text-sm font-semibold text-as2-blue uppercase flex items-center mb-2">
+                            <i data-lucide="trending-up" class="w-4 h-4 mr-2"></i> Performance
+                        </span>
+                        <h3 class="text-2xl font-bold text-white mb-2">Comment le 5D BIM garantit 15% d'économies</h3>
+                        <p class="text-gray-400 mb-4 text-sm">
+                            Analyse détaillée de l'impact du BIM sur la chaîne de valeur : de la précision des métrés à l'analyse de rentabilité 5D.
+                        </p>
+                        <a href="#" class="text-as2-blue hover:text-as2-blue-dark text-sm font-medium flex items-center">
+                            Lire l'article <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Article 3: Marché -->
+                <div class="bg-as2-dark-light rounded-xl shadow-xl overflow-hidden transform hover:translate-y-[-4px] transition-transform duration-300">
+                    <div class="p-6">
+                        <span class="text-sm font-semibold text-as2-blue uppercase flex items-center mb-2">
+                            <i data-lucide="globe" class="w-4 h-4 mr-2"></i> Marché Algérie
+                        </span>
+                        <h3 class="text-2xl font-bold text-white mb-2">La feuille de route BIM pour le BTPH algérien</h3>
+                        <p class="text-gray-400 mb-4 text-sm">
+                            Examen des défis locaux et des opportunités offertes par la modernisation numérique du secteur de la construction en Algérie.
+                        </p>
+                        <a href="#" class="text-as2-blue hover:text-as2-blue-dark text-sm font-medium flex items-center">
+                            Lire l'article <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Écran Contact -->
+        <div id="screen-contact" class="page-screen">
+            <h1 class="text-4xl font-extrabold text-white mb-10 border-b pb-4 border-gray-700">Contactez l'Équipe AS2Built</h1>
+            <p class="text-lg text-gray-300 mb-8 max-w-4xl">
+                Que vous soyez une entreprise cherchant à optimiser ses processus ou un expert souhaitant valider sa certification, notre équipe est là pour vous guider.
+            </p>
+
+            <div class="grid lg:grid-cols-2 gap-12">
+                <!-- Formulaire de Contact -->
+                <div class="bg-as2-dark-light p-8 rounded-xl shadow-2xl">
+                    <h2 class="text-2xl font-bold text-as2-blue mb-6">Envoyez-nous un message</h2>
+                    <form onsubmit="event.preventDefault(); showMessage('Message envoyé! Nous vous répondrons sous 48h.'); this.reset();" class="space-y-4">
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gray-300 mb-1">Nom Complet</label>
+                            <input type="text" id="name" required class="w-full px-4 py-2 rounded-lg bg-as2-dark border border-gray-700 focus:border-as2-blue focus:ring-as2-blue text-white">
+                        </div>
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-300 mb-1">Email Professionnel</label>
+                            <input type="email" id="email" required class="w-full px-4 py-2 rounded-lg bg-as2-dark border border-gray-700 focus:border-as2-blue focus:ring-as2-blue text-white">
+                        </div>
+                        <div>
+                            <label for="subject" class="block text-sm font-medium text-gray-300 mb-1">Objet de la demande</label>
+                            <select id="subject" required class="w-full px-4 py-2 rounded-lg bg-as2-dark border border-gray-700 focus:border-as2-blue focus:ring-as2-blue text-white">
+                                <option value="" disabled selected>Choisir un sujet</option>
+                                <option value="entreprise">Audit/Optimisation BIM (Entreprise)</option>
+                                <option value="formation">Formation et Certification Expert BIM</option>
+                                <option value="recrutement">Recrutement / Mission</option>
+                                <option value="autre">Autre Demande</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="message" class="block text-sm font-medium text-gray-300 mb-1">Votre Message</label>
+                            <textarea id="message" rows="4" required class="w-full px-4 py-2 rounded-lg bg-as2-dark border border-gray-700 focus:border-as2-blue focus:ring-as2-blue text-white"></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-as2-blue text-white font-bold py-3 rounded-lg text-lg hover:bg-as2-blue-dark transition-colors shadow-lg">
+                            Envoyer la Demande
+                        </button>
+                    </form>
+                    <!-- Message Box Customisé -->
+                    <div id="message-box" class="mt-6 p-4 text-center bg-green-900/50 text-green-300 rounded-lg hidden border border-green-700"></div>
+                </div>
+
+                <!-- Coordonnées -->
+                <div class="bg-as2-dark p-8 rounded-xl shadow-2xl border-2 border-gray-800 h-fit">
+                    <h2 class="text-2xl font-bold text-as2-blue mb-6">Nos Coordonnées</h2>
+                    <div class="space-y-6 text-gray-300">
+                        <div class="flex items-start">
+                            <i data-lucide="map-pin" class="w-6 h-6 mr-3 text-as2-blue flex-shrink-0"></i>
+                            <div>
+                                <strong class="text-white">Adresse (Siège Social)</strong>
+                                <p>Cité des Frères Ouf, Bâtiment 14, Alger, Algérie</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <i data-lucide="mail" class="w-6 h-6 mr-3 text-as2-blue flex-shrink-0"></i>
+                            <div>
+                                <strong class="text-white">Email (Support)</strong>
+                                <p><a href="mailto:contact@as2built.com" class="hover:underline">contact@as2built.com</a></p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <i data-lucide="phone" class="w-6 h-6 mr-3 text-as2-blue flex-shrink-0"></i>
+                            <div>
+                                <strong class="text-white">Téléphone</strong>
+                                <p>+213 (0) 561 234 567</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-8">
+                        <h3 class="text-xl font-bold text-white mb-3">Horaires</h3>
+                        <p class="text-gray-400">Dimanche - Jeudi : 8h00 - 17h00 (Heure d'Alger)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Écran Login (Canevas de Connexion) -->
+        <div id="screen-login" class="page-screen">
+            <div class="max-w-md mx-auto bg-as2-dark-light p-8 rounded-xl shadow-2xl mt-16 text-center">
+                <h1 class="text-3xl font-bold text-as2-blue mb-6" id="login-title">Connexion</h1>
+                <p class="text-gray-400 mb-8">Veuillez entrer vos identifiants pour accéder à votre espace <span id="login-type" class="font-semibold text-white"></span>.</p>
+                <!-- Formulaire de connexion simplifié -->
+                <form onsubmit="event.preventDefault(); showMessage('Connexion réussie pour l\'espace ' + document.getElementById('login-type').textContent + '. Prototype terminé!');">
+                    <div class="mb-4">
+                        <input type="email" placeholder="Email" required class="w-full px-4 py-3 rounded-lg bg-as2-dark border border-gray-700 focus:border-as2-blue focus:ring-as2-blue text-white">
+                    </div>
+                    <div class="mb-6">
+                        <input type="password" placeholder="Mot de passe" required class="w-full px-4 py-3 rounded-lg bg-as2-dark border border-gray-700 focus:border-as2-blue focus:ring-as2-blue text-white">
+                    </div>
+                    <button type="submit" class="w-full bg-as2-blue text-white font-bold py-3 rounded-lg text-lg hover:bg-as2-blue-dark transition-colors shadow-lg">
+                        Se Connecter
+                    </button>
+                </form>
+                <button onclick="showScreen('home')" class="mt-4 text-sm text-gray-500 hover:text-as2-blue transition-colors">Retour à l'accueil</button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Script JavaScript pour la navigation et l'affichage des icônes -->
+    <script>
+        // Fonction pour afficher un écran et masquer les autres
+        function showScreen(screenId) {
+            // Masquer tous les écrans
+            document.querySelectorAll('.page-screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            // Afficher l'écran demandé
+            const targetScreen = document.getElementById(`screen-${screenId}`);
+            if (targetScreen) {
+                targetScreen.classList.add('active');
+            }
+
+            // Mettre à jour la classe "active-link" dans la navigation
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active-link');
+                if (link.getAttribute('data-screen') === screenId) {
+                    link.classList.add('active-link');
+                }
+            });
+
+            // Masquer le menu mobile après la sélection
+            document.getElementById('mobile-menu').classList.add('hidden');
+        }
+
+        // Fonction spécifique pour afficher l'écran de connexion
+        function showLogin(type) {
+            showScreen('login');
+            const typeText = type === 'enterprise' ? 'Entreprise' : 'Expert BIM';
+            document.getElementById('login-title').textContent = `Connexion ${typeText}`;
+            document.getElementById('login-type').textContent = typeText;
+        }
+
+        // Fonction d'affichage du message box customisé (remplace alert())
+        function showMessage(message) {
+            const msgBox = document.getElementById('message-box');
+            msgBox.textContent = message;
+            msgBox.classList.remove('hidden');
+            setTimeout(() => {
+                msgBox.classList.add('hidden');
+            }, 5000);
+        }
+
+        // Initialisation à l'écran d'accueil et des icônes
+        window.onload = () => {
+            // Activer l'écran d'accueil par défaut et le lien actif
+            showScreen('home');
+
+            // Initialiser les icônes Lucide
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        };
+
+        // Gestion du menu mobile
+        document.getElementById('mobile-menu-button').addEventListener('click', () => {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        });
+    </script>
+
+    <!-- Footer -->
+    <footer class="bg-as2-dark-light border-t border-gray-800 mt-12 py-6 text-center text-sm text-gray-500">
+        <p>&copy; 2025 AS2Built. Tous droits réservés. Prototype BIM Hub Algérie.</p>
+    </footer>
+
+</body>
+</html>
