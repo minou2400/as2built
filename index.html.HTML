@@ -1,0 +1,2574 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AS2Built : Hub BIM Algérie</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chargement des icônes Lucide pour les illustrations -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Couleurs personnalisées AS2Built */
+            --as2-blue: #0077b6;
+            --as2-blue-dark: #003366;
+            --as2-dark: #121212;
+            --as2-dark-light: #1e1e1e;
+            /* Couleurs pour la simulation ACC */
+            --acc-sidebar: #FFFFFF; /* Fond blanc comme dans l'image */
+            --acc-text: #121212;
+            --acc-blue: #0073e6; /* Bleu spécifique ACC */
+            --acc-light-bg: #f4f4f4;
+            --acc-header: #FFFFFF;
+            /* Couleur Admin */
+            --as2-red-admin: #dc2626; /* red-600 */
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--as2-dark);
+            color: #E0E0E0;
+            line-height: 1.6;
+        }
+        .text-as2-blue { color: var(--as2-blue); }
+        .bg-as2-blue { background-color: var(--as2-blue); }
+        .hover\:bg-as2-blue-dark:hover { background-color: var(--as2-blue-dark); }
+        .border-as2-blue { border-color: var(--as2-blue); }
+        .border-as2-blue-dark { border-color: var(--as2-blue-dark); }
+        .bg-as2-dark-light { background-color: var(--as2-dark-light); }
+        .bg-as2-dark { background-color: var(--as2-dark); }
+        .active-link {
+            border-bottom: 2px solid var(--as2-blue);
+            color: var(--as2-blue);
+        }
+        .page-screen {
+            display: none;
+            padding-top: 5rem; /* Espace pour la barre de navigation fixe */
+            min-height: 100vh;
+        }
+        .page-screen.active {
+            display: block;
+        }
+        /* Style pour les onglets de tableau de bord */
+        .tab-button {
+            padding: 0.75rem 1.25rem;
+            border-bottom: 3px solid transparent;
+            font-weight: 600;
+            color: #9CA3AF; /* Gray 400 */
+            transition: all 0.2s;
+        }
+        .tab-button:hover {
+            color: #E0E0E0; /* White */
+        }
+        /* Style pour les onglets utilisateurs/experts */
+        .tab-button.active {
+            border-bottom-color: var(--as2-blue);
+            color: var(--as2-blue);
+        }
+        /* Style pour les onglets admin */
+        .tab-button.admin-active.active {
+            border-bottom-color: var(--as2-red-admin);
+            color: var(--as2-red-admin);
+        }
+
+        .tab-content {
+            display: none;
+            padding: 1.5rem 0;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        /* Style pour les liens de projet */
+        .project-link {
+            display: block;
+            padding: 0.75rem;
+            background-color: var(--as2-dark);
+            border: 1px solid #27272A; /* Zine 800 */
+            border-radius: 0.5rem;
+            color: var(--as2-blue);
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        .project-link:hover {
+            background-color: #1e293b; /* Slate 800 */
+            border-color: var(--as2-blue);
+            color: #E0E0E0;
+        }
+        .project-link strong {
+            color: #fff;
+        }
+        /* Style pour les liens de projet conclus (grisés) */
+        .project-link.concluded {
+            color: #6B7280; /* Gray 500 */
+            border-color: #374151; /* Gray 700 */
+        }
+         .project-link.concluded strong {
+             color: #9CA3AF; /* Gray 400 */
+         }
+        .project-link.concluded:hover {
+            background-color: #1F2937; /* Gray 800 */
+            color: #9CA3AF;
+        }
+        /* Style pour les offres (dashed) */
+         .project-link.offer {
+            color: #FBBF24; /* Amber 400 */
+            border-style: dashed;
+            border-color: #FBBF24;
+        }
+        .project-link.offer strong {
+            color: #FDE68A; /* Amber 200 */
+        }
+         .project-link.offer:hover {
+            background-color: #422006; /* Amber 900 */
+            color: #FBBF24;
+        }
+
+
+        /* Styles spécifiques pour la SIMULATION ACC */
+        #screen-acc-simulation {
+            padding-top: 0; /* Pas de padding car l'interface ACC prend tout l'espace */
+            min-height: 100vh;
+        }
+        .acc-container {
+            display: flex;
+            min-height: 100vh;
+            margin-top: 4rem; /* Pour compenser la barre de navigation AS2Built */
+            background-color: var(--acc-light-bg);
+        }
+        .acc-sidebar {
+            width: 250px;
+            background-color: var(--acc-sidebar);
+            border-right: 1px solid #e0e0e0;
+            padding-top: 1rem;
+            color: var(--acc-text);
+            position: fixed;
+            height: calc(100vh - 4rem);
+            overflow-y: auto;
+        }
+        .acc-main-content {
+            flex-grow: 1;
+            margin-left: 250px; /* Doit correspondre à la largeur du sidebar */
+            padding: 2rem;
+            color: var(--acc-text);
+        }
+        .acc-sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 0.65rem 1.5rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--acc-text);
+            transition: background-color 0.15s;
+        }
+        .acc-sidebar-link:hover {
+            background-color: #f0f0f0;
+        }
+        .acc-sidebar-link.active {
+            color: var(--acc-blue);
+            background-color: #f0f0ff;
+            border-right: 3px solid var(--acc-blue);
+        }
+        .acc-sidebar-title {
+            padding: 0.5rem 1.5rem;
+            color: #888;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            margin-top: 1rem;
+        }
+        .acc-header-bar {
+            background-color: var(--acc-header);
+            border-bottom: 1px solid #e0e0e0;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 4rem;
+            left: 250px;
+            right: 0;
+            z-index: 40;
+        }
+        /* Styles pour les packs de formation */
+        .pack-card {
+            border: 1px solid #3f3f46; /* Zinc 700 */
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .pack-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 119, 182, 0.3); /* as2-blue shadow */
+        }
+        .module-table-row:nth-child(even) {
+            background-color: #1e1e1e; /* Lighter dark for alternating rows */
+        }
+        .module-table-row:hover {
+            background-color: #27272A; /* Zinc 800 */
+        }
+        /* Styles pour le calendrier simulé */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+            text-align: center;
+        }
+        .calendar-header-day {
+            font-weight: 600;
+            color: var(--as2-blue);
+            padding: 0.5rem 0;
+            font-size: 0.8rem;
+        }
+        .calendar-day-box {
+            padding: 0.5rem 0;
+            min-height: 40px;
+            border-radius: 4px;
+            position: relative;
+            background-color: var(--as2-dark);
+            color: #E0E0E0;
+            font-size: 0.85rem;
+        }
+        .calendar-day-box.event {
+            background-color: #164e63; /* Cyan 800 */
+            cursor: pointer;
+            border: 1px solid var(--as2-blue);
+        }
+        .calendar-day-box.event:hover {
+            background-color: #0c4a6e; /* Cyan 900 */
+        }
+        .current-day {
+            border: 2px solid #EAB308; /* Yellow 500 */
+        }
+        .event-dot {
+            position: absolute;
+            bottom: 2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background-color: #fde047; /* Yellow 200 */
+        }
+        /* Style spécifique Admin */
+        .admin-link {
+            color: var(--as2-red-admin);
+            border-color: var(--as2-red-admin);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Barre de Navigation Fixe (AS2Built) -->
+    <nav class="fixed top-0 left-0 w-full bg-as2-dark border-b border-gray-800 z-50 shadow-xl">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <a href="#" onclick="showScreen('home')" class="flex items-center space-x-3">
+                    <!-- Logo Simulé -->
+                    <div class="h-8 w-8 text-as2-blue">
+                        <svg viewBox="0 0 50 50" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M25 5 L5 45 H45 Z M25 15 L35 35 H15 Z M25 25 L32 39 H18 Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <span class="text-2xl font-extrabold text-white">AS2<span class="text-as2-blue">BUILT</span></span>
+                </a>
+
+                <!-- Liens Desktop -->
+                <div class="hidden md:flex space-x-6 text-lg font-medium items-center">
+                    <a href="#" onclick="showScreen('home')" class="nav-link p-2 transition-colors duration-200 hover:text-as2-blue" data-screen="home">Home</a>
+                    <a href="#" onclick="showScreen('about')" class="nav-link p-2 transition-colors duration-200 hover:text-as2-blue" data-screen="about">À Propos</a>
+                    <a href="#" onclick="showScreen('services')" class="nav-link p-2 transition-colors duration-200 hover:text-as2-blue" data-screen="services">Services</a>
+                    <a href="#" onclick="showScreen('projects')" class="nav-link p-2 transition-colors duration-200 hover:text-as2-blue" data-screen="projects">Projets</a>
+                    <a href="#" onclick="showScreen('why-bim')" class="nav-link p-2 transition-colors duration-200 hover:text-as2-blue" data-screen="why-bim">Pourquoi BIM ?</a>
+                    <a href="#" onclick="showScreen('blog')" class="nav-link p-2 transition-colors duration-200 hover:text-as2-blue" data-screen="blog">Blog</a>
+                    <a href="#" onclick="showScreen('contact')" class="nav-link p-2 transition-colors duration-200 hover:text-as2-blue" data-screen="contact">Contact</a>
+                    
+                    <!-- BOUTON DE CONNEXION GLOBAL -->
+                    <a href="#" onclick="showLoginSelection()" class="flex items-center space-x-1.5 py-2 px-4 rounded-lg bg-as2-blue text-white text-base font-semibold border border-as2-blue transition-colors duration-200 hover:bg-as2-blue-dark ml-6 shadow-md">
+                        <i data-lucide="log-in" class="w-5 h-5"></i>
+                        <span>Login</span>
+                    </a>
+                </div>
+
+                <!-- Bouton Mobile Menu -->
+                <button id="mobile-menu-button" class="md:hidden text-white focus:outline-none">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Menu Mobile (Affiché/Caché par JS) -->
+        <div id="mobile-menu" class="hidden md:hidden">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 flex flex-col items-center bg-as2-dark-light border-t border-gray-700">
+                <a href="#" onclick="showScreen('home')" class="nav-link block px-3 py-2 rounded-md text-base font-medium transition-colors hover:text-as2-blue" data-screen="home">Home</a>
+                <a href="#" onclick="showScreen('about')" class="nav-link block px-3 py-2 rounded-md text-base font-medium transition-colors hover:text-as2-blue" data-screen="about">À Propos</a>
+                <a href="#" onclick="showScreen('services')" class="nav-link block px-3 py-2 rounded-md text-base font-medium transition-colors hover:text-as2-blue" data-screen="services">Services</a>
+                <a href="#" onclick="showScreen('projects')" class="nav-link block px-3 py-2 rounded-md text-base font-medium transition-colors hover:text-as2-blue" data-screen="projects">Projets</a>
+                <a href="#" onclick="showScreen('why-bim')" class="nav-link block px-3 py-2 rounded-md text-base font-medium transition-colors hover:text-as2-blue" data-screen="why-bim">Pourquoi BIM ?</a>
+                <a href="#" onclick="showScreen('blog')" class="nav-link block px-3 py-2 rounded-md text-base font-medium transition-colors hover:text-as2-blue" data-screen="blog">Blog</a>
+                <a href="#" onclick="showScreen('contact')" class="nav-link block px-3 py-2 rounded-md text-base font-medium transition-colors hover:text-as2-blue" data-screen="contact">Contact</a>
+                <!-- LIEN DE CONNEXION MOBILE GLOBAL -->
+                <a href="#" onclick="showLoginSelection()" class="nav-link block px-3 py-2 rounded-md text-base font-medium bg-as2-blue text-white hover:bg-as2-blue-dark transition-colors" data-screen="login-selection">Login (Espaces Privés)</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenu Principal des Écrans (Le main contient tout sauf la simulation ACC pour des raisons de structure) -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 pt-8">
+
+        <!-- Écran Home -->
+        <div id="screen-home" class="page-screen active">
+            <!-- Mise à jour: Ajout de la statistique clé -->
+            <header class="text-center my-12 md:my-20">
+                <h1 class="text-4xl md:text-5xl font-bold text-as2-blue">
+                    AS2Built : Le Hub BIM pour la performance BTP en Algérie.
+                </h1>
+                <p class="text-xl text-gray-300 mt-4 max-w-3xl mx-auto">
+                    La plateforme qui connecte les experts certifiés et les entreprises pour des projets optimisés.
+                </p>
+                <!-- NOUVELLE STATISTIQUE DEMANDÉE -->
+                <div class="mt-8 mb-10 p-4 bg-as2-blue/10 border border-as2-blue rounded-lg max-w-lg mx-auto shadow-lg">
+                    <p class="text-2xl font-extrabold text-white">
+                        <span class="text-green-400">40%+</span> d'économies de coûts potentielles grâce à une coordination BIM efficace.
+                    </p>
+                </div>
+                <!-- FIN NOUVELLE STATISTIQUE -->
+
+                <!-- Illustration BIM symbolique (Icône) -->
+                <div class="mt-10 mb-16 text-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="mx-auto text-as2-blue">
+                        <path d="M12 2v6"/><path d="M12 18v4"/><path d="M4.93 4.93l2.83 2.83"/><path d="M16.24 16.24l2.83 2.83"/><path d="M2 12h6"/><path d="M18 12h4"/><path d="M4.93 19.07l2.83-2.83"/><path d="M16.24 7.76l2.83-2.83"/><circle cx="12" cy="12" r="2"/><path d="M14 6H9.5a2.5 2.5 0 0 0 0 5H12"/><path d="M10 18v-6h4"/></svg>
+                </div>
+            </header>
+
+            <div class="grid lg:grid-cols-2 gap-8 my-16">
+                <!-- Bloc Entreprise -->
+                <div class="bg-as2-dark-light p-8 rounded-lg shadow-2xl border-2 border-as2-blue-dark">
+                    <h2 class="text-3xl font-extrabold text-as2-blue mb-4 flex items-center">
+                        <i data-lucide="building" class="w-8 h-8 mr-3"></i> Espace Entreprise
+                    </h2>
+                    <p class="text-lg text-gray-300 mb-4">
+                        Nous sommes le Hub de Compétences BIM qui fiabilise vos projets de construction.
+                    </p>
+                    <ul class="text-gray-400 space-y-3 mb-6 list-none pl-0">
+                        <li class="flex items-start">
+                            <i data-lucide="check-circle" class="w-5 h-5 mr-3 mt-1 text-green-400 flex-shrink-0"></i>
+                            <span>Nous résolvons le manque de coordination structurée en vous offrant des solutions d'Audit et d'Optimisation pour vos processus internes.</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-lucide="check-circle" class="w-5 h-5 mr-3 mt-1 text-green-400 flex-shrink-0"></i>
+                            <span>Nous vous connectons instantanément à un réseau d'experts BIM certifiés pour réduire les coûts de non-qualité (erreurs) et les retards sur vos chantiers.</span>
+                        </li>
+                    </ul>
+                    <button onclick="showLogin('enterprise')" class="w-full bg-as2-dark text-as2-blue border border-as2-blue font-bold py-3 px-6 rounded-lg text-lg hover:bg-as2-dark-light transition-colors shadow-lg mt-4">
+                        Accéder à l'Espace Entreprise
+                    </button>
+                </div>
+
+                <!-- Bloc Individuel/Expert -->
+                <div class="bg-as2-dark-light p-8 rounded-lg shadow-2xl border-2 border-as2-blue-dark">
+                    <h2 class="text-3xl font-extrabold text-as2-blue mb-4 flex items-center">
+                        <i data-lucide="user-check" class="w-8 h-8 mr-3"></i> Espace Expert BIM
+                    </h2>
+                    <p class="text-lg text-gray-300 mb-4">
+                        Nous sommes le catalyseur de votre expertise professionnelle.
+                    </p>
+                    <ul class="text-gray-400 space-y-3 mb-6 list-none pl-0">
+                        <li class="flex items-start">
+                            <i data-lucide="award" class="w-5 h-5 mr-3 mt-1 text-yellow-400 flex-shrink-0"></i>
+                            <span>Nous offrons des programmes de Formation certifiants axés sur la méthodologie BIM et les standards internationaux.</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-lucide="briefcase" class="w-5 h-5 mr-3 mt-1 text-yellow-400 flex-shrink-0"></i>
+                            <span>Nous vous assurons un placement qualifié en vous connectant directement aux entreprises qui ont besoin de vos compétences.</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-lucide="trending-up" class="w-5 h-5 mr-3 mt-1 text-yellow-400 flex-shrink-0"></i>
+                            <span>Nous transformons votre déficit de maîtrise en une expertise locale de premier plan.</span>
+                        </li>
+                    </ul>
+                    <button onclick="showLogin('expert')" class="w-full bg-as2-blue text-white font-bold py-3 px-6 rounded-lg text-lg hover:bg-as2-blue-dark transition-colors shadow-lg mt-4">
+                        Accéder à l'Espace Expert BIM
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8 my-16 md:my-24 text-center">
+                <div class="bg-as2-dark-light p-8 rounded-lg shadow-xl border border-gray-800 transform hover:scale-[1.02] transition-transform duration-300">
+                    <i data-lucide="graduation-cap" class="w-12 h-12 mx-auto text-as2-blue"></i>
+                    <h3 class="text-2xl font-semibold mt-4 mb-2">Formation Certifiante</h3>
+                    <p class="text-gray-400">Montez en compétence avec des formations labellisées AS2Built et adaptées au marché algérien.</p>
+                </div>
+                <div class="bg-as2-dark-light p-8 rounded-lg shadow-xl border border-gray-800 transform hover:scale-[1.02] transition-transform duration-300">
+                    <i data-lucide="users" class="w-12 h-12 mx-auto text-as2-blue"></i>
+                    <h3 class="text-2xl font-semibold mt-4 mb-2">Coordination du Marché</h3>
+                    <p class="text-gray-400">Accédez à notre hub d'experts validés ou déposez votre CV pour trouver des missions exclusives.</p>
+                </div>
+                <div class="bg-as2-dark-light p-8 rounded-lg shadow-xl border border-gray-800 transform hover:scale-[1.02] transition-transform duration-300">
+                    <i data-lucide="settings" class="w-12 h-12 mx-auto text-as2-blue"></i>
+                    <h3 class="text-2xl font-semibold mt-4 mb-2">Audit & Solutions BIM</h3>
+                    <p class="text-gray-400">Évaluez votre maturité BIM et laissez-nous vous guider vers l'optimisation de vos processus.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Écran About (Inchangé) -->
+        <div id="screen-about" class="page-screen">
+            <h1 class="text-4xl font-extrabold text-white mb-10 border-b pb-4 border-gray-700">À Propos d'AS2Built</h1>
+            <div class="space-y-12">
+                <section class="bg-as2-dark-light p-8 rounded-xl shadow-lg border-l-4 border-as2-blue">
+                    <h2 class="text-3xl font-bold text-as2-blue mb-4 flex items-center">
+                        <i data-lucide="target" class="w-6 h-6 mr-3"></i> Notre Mission
+                    </h2>
+                    <p class="text-lg text-gray-300 mb-4">
+                        Notre mission est d'adresser et de résoudre le déficit critique de personnel qualifié et le manque de coordination structurée qui freinent actuellement la performance et l'innovation dans le secteur du Bâtiment et des Travaux Publics (BTPH) en Algérie.
+                    </p>
+                    <p class="text-lg text-gray-300">
+                        À travers notre Hub BIM, nous visons à fiabiliser les projets (en réduisant les erreurs et les coûts de non-qualité mesurables, estimés entre <span class="text-as2-blue font-bold">5% et 15%</span> du coût total du projet) et à assurer la modernisation accélérée de l'ensemble de l'écosystème de construction national.
+                    </p>
+                </section>
+                <section class="bg-as2-dark-light p-8 rounded-xl shadow-lg border-l-4 border-as2-blue">
+                    <h2 class="text-3xl font-bold text-as2-blue mb-4 flex items-center">
+                        <i data-lucide="eye" class="w-6 h-6 mr-3"></i> Notre Vision
+                    </h2>
+                    <p class="text-lg text-gray-300">
+                        Devenir la référence nationale incontournable en tant que Hub de Compétences BIM intégré et le leader de l'optimisation des projets BTP en Algérie, avec un déploiement et une expansion régionale (e-learning et plateforme de matching) dans un pays cible de la zone MENA d'ici trois ans. Nous voulons être reconnus comme l'unique entité capable de garantir la pleine maîtrise exécutive des projets.
+                    </p>
+                </section>
+                <section class="bg-as2-dark-light p-8 rounded-xl shadow-lg border-l-4 border-as2-blue">
+                    <h2 class="text-3xl font-bold text-as2-blue mb-6 flex items-center">
+                        <i data-lucide="workflow" class="w-6 h-6 mr-3"></i> Notre Approche Intégrée : Le Hub End-to-End
+                    </h2>
+                    <p class="text-lg text-gray-300 mb-8">
+                        L'approche d'AS2Built est un modèle de Hub intégré unique, construit sur trois piliers fondamentaux pour répondre au fossé entre l'ambition BIM et la capacité d'exécution dans le secteur du BTPH algérien.
+                    </p>
+                    <div class="space-y-8">
+                        <div class="p-6 bg-as2-dark border border-gray-700 rounded-lg">
+                            <h3 class="text-xl font-semibold text-as2-blue flex items-center mb-2">
+                                <span class="text-4xl mr-3">🎓</span> 1. Formation d'Experts Certifiés (Compétence)
+                            </h3>
+                            <p class="text-gray-400">Ce pilier répond au déficit critique de compétence technique sur le marché.</p>
+                            <ul class="mt-3 text-sm text-gray-500 space-y-1">
+                                <li>**Action :** Proposer des programmes certifiants axés sur la méthodologie BIM et les standards internationaux.</li>
+                                <li>**Objectif :** Former la prochaine génération de Coordinateurs et BIM Managers certifiés.</li>
+                            </ul>
+                        </div>
+                        <div class="p-6 bg-as2-dark border border-gray-700 rounded-lg">
+                            <h3 class="text-xl font-semibold text-as2-blue flex items-center mb-2">
+                                <span class="text-4xl mr-3">🤝</span> 2. Coordination du Marché (Matching Qualifié)
+                            </h3>
+                            <p class="text-gray-400">Ce pilier agit comme un marché organisé et un passeport qualité, reliant les compétences vérifiées à la demande.</p>
+                            <ul class="mt-3 text-sm text-gray-500 space-y-1">
+                                <li>**Action :** Mettre en place une plateforme de matching pour connecter les experts BIM (freelancers certifiés) avec les entreprises (pour des missions ponctuelles ou longues).</li>
+                                <li>**Objectif :** Créer un marché de l'emploi organisé et qualifier la mise en relation, réduisant la dépendance aux consultants étrangers.</li>
+                            </ul>
+                        </div>
+                        <div class="p-6 bg-as2-dark border border-gray-700 rounded-lg">
+                            <h3 class="text-xl font-semibold text-as2-blue flex items-center mb-2">
+                                <span class="text-4xl mr-3">📈</span> 3. Audit & Solutions (Optimisation)
+                            </h3>
+                            <p class="text-gray-400">Ce pilier se concentre sur la maximisation du Retour sur Investissement (ROI) de l'adoption du BIM pour les entreprises clientes.</p>
+                            <ul class="mt-3 text-sm text-gray-500 space-y-1">
+                                <li>**Action :** Offrir du conseil stratégique pour l'intégration de Systèmes de Gestion BIM (SGB), auditer les pratiques internes, et assister l'intégration de logiciels.</li>
+                                <li>**Objectif :** Optimiser les processus internes de l'entreprise pour garantir une réduction mesurable des erreurs et des coûts de non-qualité (estimés entre 5% et 15% du coût total).</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p class="mt-8 text-sm italic text-gray-500">
+                        Ce Modèle Hub Intégré est la différenciation clé d'AS2Built, car il relie la Formation, la Mise en Relation Qualifiée, et l'Optimisation des Outils sous une seule méthodologie, garantissant ainsi une performance complète.
+                    </p>
+                </section>
+            </div>
+        </div>
+
+        <!-- Écran Services -->
+        <div id="screen-services" class="page-screen">
+            <h1 class="text-4xl font-extrabold text-white mb-10 border-b pb-4 border-gray-700">Nos Services BIM Détaillés</h1>
+            <p class="text-lg text-gray-300 mb-10">
+                L'offre AS2Built est structurée autour des besoins spécifiques de nos deux plateformes : Entreprise (Optimisation & Coordination) et Expert (Compétence & Placement).
+            </p>
+            
+            <!-- Pilier 1 & 3 : Espace Entreprise -->
+            <section class="mb-12">
+                <h2 class="text-3xl font-bold text-as2-blue mb-6 flex items-center">
+                    <i data-lucide="building" class="w-6 h-6 mr-3"></i> Services Espace Entreprise (Audit & Coordination)
+                </h2>
+                <p class="text-gray-300 mb-8">
+                    Ces services sont dédiés à la fiabilisation des projets, la réduction des risques et l'optimisation des coûts de construction.
+                </p>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="p-6 bg-as2-dark-light border border-gray-700 rounded-lg shadow-md">
+                        <h3 class="text-xl font-semibold text-white mb-3 flex items-center">
+                            <i data-lucide="hard-hat" class="w-5 h-5 mr-2 text-red-400"></i> 1. Coordination BIM (Niveau 1 & 2)
+                        </h3>
+                        <ul class="text-sm text-gray-400 space-y-2 list-disc pl-5">
+                            <li>Modélisation 3D (Archi, Structure, MEP).</li>
+                            <li>Clash Detection & Resolution.</li>
+                            <li>Design Optimization & Virtual Commissioning.</li>
+                        </ul>
+                    </div>
+                    <div class="p-6 bg-as2-dark-light border border-gray-700 rounded-lg shadow-md">
+                        <h3 class="text-xl font-semibold text-white mb-3 flex items-center">
+                            <i data-lucide="dollar-sign" class="w-5 h-5 mr-2 text-yellow-400"></i> 2. Gestion de Projet (4D & 5D)
+                        </h3>
+                        <ul class="text-sm text-gray-400 space-y-2 list-disc pl-5">
+                            <li>4D & 5D PROFITABILITY ANALYSIS.</li>
+                            <li>Construction Sequencing & Simulation (4D).</li>
+                            <li>Quantity Scheduling & Project Cost Analysis (5D).</li>
+                        </ul>
+                    </div>
+                    <div class="p-6 bg-as2-dark-light border border-gray-700 rounded-lg shadow-md">
+                        <h3 class="text-xl font-semibold text-white mb-3 flex items-center">
+                            <i data-lucide="settings" class="w-5 h-5 mr-2 text-purple-400"></i> 3. Audit & Conseil Stratégique
+                        </h3>
+                        <ul class="text-sm text-gray-400 space-y-2 list-disc pl-5">
+                            <li>Audit de Maturité BIM & Plan d'Action.</li>
+                            <li>Intégration de Systèmes de Gestion BIM (SGB).</li>
+                            <li>Assistance à la rédaction de Convention BIM.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Pilier 1 & 2 : Espace Expert -->
+            <section class="mb-12 border-t border-gray-700 pt-10">
+                <h2 class="text-3xl font-bold text-as2-blue mb-6 flex items-center">
+                    <i data-lucide="user-check" class="w-6 h-6 mr-3"></i> Services Espace Expert (Formation & Placement)
+                </h2>
+                <p class="text-gray-300 mb-6">Ces services sont conçus pour élever votre niveau de compétence et vous connecter aux meilleures opportunités de mission.</p>
+                <div class="overflow-x-auto bg-as2-dark-light rounded-xl shadow-lg">
+                    <table class="min-w-full divide-y divide-gray-700">
+                        <thead class="bg-as2-blue-dark">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Domaine de Compétence</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Offre AS2Built</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-800">
+                            <!-- Formation -->
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-as2-blue flex items-center">
+                                    <i data-lucide="graduation-cap" class="w-4 h-4 mr-2"></i> Certification BIM
+                                </td>
+                                <td class="px-6 py-4 whitespace-normal text-sm text-gray-400">
+                                    Formations certifiantes BIM Manager (Niveau 2), BIM Coordinator (Niveau 1) et Spécialisations (5D, CDE, etc.).
+                                </td>
+                            </tr>
+                            <!-- Placement / Matching -->
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-as2-blue flex items-center">
+                                    <i data-lucide="briefcase" class="w-4 h-4 mr-2"></i> Placement Qualifié
+                                </td>
+                                <td class="px-6 py-4 whitespace-normal text-sm text-gray-400">
+                                    Matching direct avec les besoins des entreprises algériennes. Dépôt et mise à jour de CV pour des missions exclusives (freelance ou CDI).
+                                </td>
+                            </tr>
+                            <!-- Spécialisation -->
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-as2-blue flex items-center">
+                                    <i data-lucide="sun" class="w-4 h-4 mr-2"></i> Performance Énergétique
+                                </td>
+                                <td class="px-6 py-4 whitespace-normal text-sm text-gray-400">
+                                    Modules d'expertise en Energy Optimization, Daylighting Analysis et Sustainable Materials.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+        <!-- Écran Projects (Inchangé) -->
+        <div id="screen-projects" class="page-screen">
+            <h1 class="text-4xl font-extrabold text-white mb-10 border-b pb-4 border-gray-700">Nos Projets & Études de Cas BIM</h1>
+            <p class="text-lg text-gray-300 mb-10">
+                L'expertise AS2Built en action. Découvrez comment nos solutions ont fiabilisé et optimisé des projets complexes dans le BTP algérien.
+            </p>
+            <div class="grid lg:grid-cols-3 gap-8">
+                <div class="bg-as2-dark-light rounded-xl shadow-xl overflow-hidden">
+                    <div class="h-48 bg-gray-900 flex items-center justify-center relative">
+                         <i data-lucide="hospital" class="w-16 h-16 text-as2-blue opacity-50 absolute"></i>
+                        <span class="text-sm text-gray-500 z-10 p-2 bg-gray-900/50 rounded">Audit 5D : Rendu BIM Structure & MEP</span>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold text-as2-blue mb-2">Centre Hospitalier Régional - Audit 5D</h3>
+                        <p class="text-sm text-gray-400 mb-4">
+                            **Service Clé :** Audit 5D (Coût & Quantités) et Analyse de Valeur.
+                        </p>
+                        <p class="text-gray-300 mb-4 text-sm">
+                            **Problème :** Incohérences majeures entre les métrés traditionnels et les modèles de conception, menant à un dépassement de budget potentiel de 12%.
+                        </p>
+                        <ul class="text-sm text-gray-400 space-y-2 list-none pl-0">
+                            <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 mr-2 text-green-400"></i> Réduction des coûts de 8% par Value Engineering BIM.</li>
+                            <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 mr-2 text-green-400"></i> Fiabilisation du Quantity Scheduling via le modèle 5D.</li>
+                            <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 mr-2 text-green-400"></i> Gain de 4 semaines sur l'approvisionnement.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="bg-as2-dark-light rounded-xl shadow-xl overflow-hidden">
+                    <div class="h-48 bg-gray-900 flex items-center justify-center relative">
+                        <i data-lucide="crane" class="w-16 h-16 text-as2-blue opacity-50 absolute"></i>
+                        <span class="text-sm text-gray-500 z-10 p-2 bg-gray-900/50 rounded">Coordination : Modèle BIM Résidentiel en Coupe</span>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold text-as2-blue mb-2">Tour Résidentielle R+15 - Coordination</h3>
+                        <p class="text-sm text-gray-400 mb-4">
+                            **Service Clé :** Coordination multi-disciplinaire et Clash Detection/Resolution.
+                        </p>
+                        <p class="text-gray-300 mb-4 text-sm">
+                            **Problème :** Multiples interférences structurelles/MEP non résolues sur les plans 2D classiques.
+                        </p>
+                        <ul class="text-sm text-gray-400 space-y-2 list-none pl-0">
+                            <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 mr-2 text-green-400"></i> 100% des clashes majeurs résolus en amont (Phase Design).</li>
+                            <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 mr-2 text-green-400"></i> Simulation 4D pour optimiser le séquençage de la construction.</li>
+                            <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 mr-2 text-green-400"></i> Réduction des travaux de correction sur site.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="bg-as2-dark-light rounded-xl shadow-xl overflow-hidden">
+                    <div class="h-48 bg-gray-900 flex items-center justify-center relative">
+                         <i data-lucide="factory" class="w-16 h-16 text-as2-blue opacity-50 absolute"></i>
+                        <span class="text-sm text-gray-500 z-10 p-2 bg-gray-900/50 rounded">FM : Rendu Extérieur d'une Installation Industrielle</span>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold text-as2-blue mb-2">Usine Agro-alimentaire - As-Built FM</h3>
+                        <p class="text-sm text-gray-400 mb-4">
+                            **Service Clé :** Modélisation As-Built pour la gestion des installations (FM).
+                        </p>
+                        <p class="text-gray-300 mb-4 text-sm">
+                            **Problème :** Documentation papier obsolète pour la maintenance et la gestion des actifs.
+                        </p>
+                        <ul class="text-sm text-gray-400 space-y-2 list-none pl-0">
+                            <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 mr-2 text-green-400"></i> Création d'un modèle As-Built précis (Jumeau Numérique Statique).</li>
+                            <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 mr-2 text-green-400"></i> Intégration des données d'inventaire et de maintenance (7D BIM).</li>
+                            <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 mr-2 text-green-400"></i> Optimisation des cycles de maintenance des équipements critiques.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Écran Why BIM? (Inchangé) -->
+        <div id="screen-why-bim" class="page-screen">
+            <h1 class="text-4xl font-extrabold text-white mb-10 border-b pb-4 border-gray-700">Pourquoi Adopter le BIM ? La Garantie AS2Built</h1>
+            <p class="text-lg text-gray-300 mb-10 max-w-4xl">
+                Le Building Information Modeling (BIM) n'est pas un simple logiciel. C'est une méthodologie qui transforme la gestion de l'information pour garantir la performance financière et l'excellence opérationnelle de vos projets BTP.
+            </p>
+            <div class="grid lg:grid-cols-2 gap-10">
+                <div class="bg-as2-dark-light p-8 rounded-xl shadow-2xl border-l-4 border-red-500">
+                    <h2 class="text-3xl font-bold text-red-400 mb-4 flex items-center">
+                        <i data-lucide="shield-check" class="w-6 h-6 mr-3"></i> 🛡️ Maîtrise des Coûts & Sécurisation
+                    </h2>
+                    <p class="text-gray-300 mb-6">
+                        Le BIM par AS2Built est votre police d'assurance contre les imprévus coûteux du chantier.
+                    </p>
+                    <ul class="space-y-4 text-gray-400">
+                        <li class="flex items-start">
+                            <i data-lucide="clover" class="w-5 h-5 mr-3 mt-1 text-red-500 flex-shrink-0"></i>
+                            <div>
+                                <strong class="text-white">Réduction des Erreurs (Clash Detection) :</strong> Identification et résolution des conflits entre disciplines (structure, MEP, architecture) en phase de conception, évitant les surcoûts de modification en phase d'exécution.
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-lucide="wallet" class="w-5 h-5 mr-3 mt-1 text-red-500 flex-shrink-0"></i>
+                            <div>
+                                <strong class="text-white">Fiabilité des Quantités (5D BIM) :</strong> Extraction automatique et précise des métrés (Quantities Scheduling) pour des appels d'offres sans surprise et un contrôle budgétaire rigoureux.
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-lucide="timer" class="w-5 h-5 mr-3 mt-1 text-red-500 flex-shrink-0"></i>
+                            <div>
+                                <strong class="text-white">Anticipation des Délais (4D BIM) :</strong> Simulation de la séquence de construction pour identifier les goulots d'étranglement et optimiser le planning, réduisant le risque de retard.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="bg-as2-dark-light p-8 rounded-xl shadow-2xl border-l-4 border-green-500">
+                    <h2 class="text-3xl font-bold text-green-400 mb-4 flex items-center">
+                        <i data-lucide="activity" class="w-6 h-6 mr-3"></i> 🚀 Performance Opérationnelle & ROI
+                    </h2>
+                    <p class="text-gray-300 mb-6">
+                        Le BIM augmente la valeur à long terme de l'actif, bien au-delà de la phase de construction.
+                    </p>
+                    <ul class="space-y-4 text-gray-400">
+                        <li class="flex items-start">
+                            <i data-lucide="leaf" class="w-5 h-5 mr-3 mt-1 text-green-500 flex-shrink-0"></i>
+                            <div>
+                                <strong class="text-white">Optimisation Énergétique (6D BIM) :</strong> Utilisation du modèle pour simuler la performance énergétique (Energy Analysis & Daylighting), garantissant des bâtiments plus durables et moins coûteux à exploiter.
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-lucide="hard-drive" class="w-5 h-5 mr-3 mt-1 text-green-500 flex-shrink-0"></i>
+                            <div>
+                                <strong class="text-white">Facility Management (FM/7D BIM) :</strong> Livrer un modèle As-Built pour la gestion des installations, facilitant la maintenance, l'inventaire des actifs et la réduction des coûts du cycle de vie.
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-lucide="handshake" class="w-5 h-5 mr-3 mt-1 text-green-500 flex-shrink-0"></i>
+                            <div>
+                                <strong class="text-white">Collaboration Améliorée :</strong> Le modèle centralisé sert de source unique de vérité, améliorant la communication entre tous les acteurs du projet (maître d'ouvrage, architecte, bureaux d'études, entreprises).
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Écran Blog (Inchangé) -->
+        <div id="screen-blog" class="page-screen">
+            <h1 class="text-4xl font-extrabold text-white mb-10 border-b pb-4 border-gray-700">Blog & Actualités BIM en Algérie</h1>
+            <p class="text-lg text-gray-300 mb-10">
+                Restez à jour sur les meilleures pratiques BIM, les nouvelles technologies et les tendances du BTPH en Algérie et dans la région MENA.
+            </p>
+            <div class="grid lg:grid-cols-3 gap-8">
+                <div class="bg-as2-dark-light rounded-xl shadow-xl overflow-hidden transform hover:translate-y-[-4px] transition-transform duration-300">
+                    <div class="p-6">
+                        <span class="text-sm font-semibold text-as2-blue uppercase flex items-center mb-2">
+                            <i data-lucide="graduation-cap" class="w-4 h-4 mr-2"></i> Formation
+                        </span>
+                        <h3 class="text-2xl font-bold text-white mb-2">Les secrets d'un Coordinateur BIM certifié</h3>
+                        <p class="text-gray-400 mb-4 text-sm">
+                            Le rôle du Coordinateur BIM est critique. Découvrez les compétences clés enseignées dans nos programmes certifiants pour sécuriser les projets.
+                        </p>
+                        <a href="#" class="text-as2-blue hover:text-as2-blue-dark text-sm font-medium flex items-center">
+                            Lire l'article <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="bg-as2-dark-light rounded-xl shadow-xl overflow-hidden transform hover:translate-y-[-4px] transition-transform duration-300">
+                    <div class="p-6">
+                        <span class="text-sm font-semibold text-as2-blue uppercase flex items-center mb-2">
+                            <i data-lucide="trending-up" class="w-4 h-4 mr-2"></i> Performance
+                        </span>
+                        <h3 class="text-2xl font-bold text-white mb-2">Comment le 5D BIM garantit 15% d'économies</h3>
+                        <p class="text-gray-400 mb-4 text-sm">
+                            Analyse détaillée de l'impact du BIM sur la chaîne de valeur : de la précision des métrés à l'analyse de rentabilité 5D.
+                        </p>
+                        <a href="#" class="text-as2-blue hover:text-as2-blue-dark text-sm font-medium flex items-center">
+                            Lire l'article <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="bg-as2-dark-light rounded-xl shadow-xl overflow-hidden transform hover:translate-y-[-4px] transition-transform duration-300">
+                    <div class="p-6">
+                        <span class="text-sm font-semibold text-as2-blue uppercase flex items-center mb-2">
+                            <i data-lucide="globe" class="w-4 h-4 mr-2"></i> Marché Algérie
+                        </span>
+                        <h3 class="text-2xl font-bold text-white mb-2">La feuille de route BIM pour le BTPH algérien</h3>
+                        <p class="text-gray-400 mb-4 text-sm">
+                            Examen des défis locaux et des opportunités offertes par la modernisation numérique du secteur de la construction en Algérie.
+                        </p>
+                        <a href="#" class="text-as2-blue hover:text-as2-blue-dark text-sm font-medium flex items-center">
+                            Lire l'article <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Écran Contact (Inchangé) -->
+        <div id="screen-contact" class="page-screen">
+            <h1 class="text-4xl font-extrabold text-white mb-10 border-b pb-4 border-gray-700">Contactez l'Équipe AS2Built</h1>
+            <p class="text-lg text-gray-300 mb-8 max-w-4xl">
+                Que vous soyez une entreprise cherchant à optimiser ses processus ou un expert souhaitant valider sa certification, notre équipe est là pour vous guider.
+            </p>
+            <div class="grid lg:grid-cols-2 gap-12">
+                <div class="bg-as2-dark-light p-8 rounded-xl shadow-2xl">
+                    <h2 class="text-2xl font-bold text-as2-blue mb-6">Envoyez-nous un message</h2>
+                    <form onsubmit="event.preventDefault(); showMessage('Message envoyé! Nous vous répondrons sous 48h.'); this.reset();" class="space-y-4">
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gray-300 mb-1">Nom Complet</label>
+                            <input type="text" id="name" required class="w-full px-4 py-2 rounded-lg bg-as2-dark border border-gray-700 focus:border-as2-blue focus:ring-as2-blue text-white">
+                        </div>
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-300 mb-1">Email Professionnel</label>
+                            <input type="email" id="email" required class="w-full px-4 py-2 rounded-lg bg-as2-dark border border-gray-700 focus:border-as2-blue focus:ring-as2-blue text-white">
+                        </div>
+                        <div>
+                            <label for="subject" class="block text-sm font-medium text-gray-300 mb-1">Objet de la demande</label>
+                            <select id="subject" required class="w-full px-4 py-2 rounded-lg bg-as2-dark border border-gray-700 focus:border-as2-blue focus:ring-as2-blue text-white">
+                                <option value="" disabled selected>Choisir un sujet</option>
+                                <option value="entreprise">Audit/Optimisation BIM (Entreprise)</option>
+                                <option value="formation">Formation et Certification Expert BIM</option>
+                                <option value="recrutement">Recrutement / Mission</option>
+                                <option value="autre">Autre Demande</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="message" class="block text-sm font-medium text-gray-300 mb-1">Votre Message</label>
+                            <textarea id="message" rows="4" required class="w-full px-4 py-2 rounded-lg bg-as2-dark border border-gray-700 focus:border-as2-blue focus:ring-as2-blue text-white"></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-as2-blue text-white font-bold py-3 rounded-lg text-lg hover:bg-as2-blue-dark transition-colors shadow-lg">
+                            Envoyer la Demande
+                        </button>
+                    </form>
+                    <!-- Message Box Customisé -->
+                    <div id="message-box" class="mt-6 p-4 text-center bg-green-900/50 text-green-300 rounded-lg hidden border border-green-700"></div>
+                </div>
+                <div class="bg-as2-dark p-8 rounded-xl shadow-2xl border-2 border-gray-800 h-fit">
+                    <h2 class="text-2xl font-bold text-as2-blue mb-6">Nos Coordonnées</h2>
+                    <div class="space-y-6 text-gray-300">
+                        <div class="flex items-start">
+                            <i data-lucide="map-pin" class="w-6 h-6 mr-3 text-as2-blue flex-shrink-0"></i>
+                            <div>
+                                <strong class="text-white">Adresse (Siège Social)</strong>
+                                <p>Cité des Frères Ouf, Bâtiment 14, Alger, Algérie</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <i data-lucide="mail" class="w-6 h-6 mr-3 text-as2-blue flex-shrink-0"></i>
+                            <div>
+                                <strong class="text-white">Email (Support)</strong>
+                                <p><a href="mailto:contact@as2built.com" class="hover:underline">contact@as2built.com</a></p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <i data-lucide="phone" class="w-6 h-6 mr-3 text-as2-blue flex-shrink-0"></i>
+                            <div>
+                                <strong class="text-white">Téléphone</strong>
+                                <p>+213 (0) 561 234 567</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-8">
+                        <h3 class="text-xl font-bold text-white mb-3">Horaires</h3>
+                        <p class="text-gray-400">Dimanche - Jeudi : 8h00 - 17h00 (Heure d'Alger)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NOUVEL ÉCRAN : Sélection de l'Espace de Connexion -->
+        <div id="screen-login-selection" class="page-screen">
+            <div class="max-w-xl mx-auto bg-as2-dark-light p-10 rounded-xl shadow-2xl mt-16 text-center">
+                <h1 class="text-3xl font-bold text-white mb-4 flex items-center justify-center">
+                    <i data-lucide="lock" class="w-7 h-7 mr-3 text-as2-blue"></i> Espace Privé AS2Built
+                </h1>
+                <p class="text-lg text-gray-400 mb-10">Sélectionnez le type de profil pour continuer vers l'authentification.</p>
+
+                <div class="grid md:grid-cols-2 gap-8">
+                    <!-- Option Entreprise -->
+                    <div class="bg-as2-dark p-6 rounded-lg shadow-xl border border-gray-700 transition-transform hover:scale-[1.03] hover:border-as2-blue duration-300">
+                        <h3 class="text-2xl font-bold text-as2-blue mb-2 flex items-center justify-center">
+                            <i data-lucide="building" class="w-6 h-6 mr-2"></i> Entreprise
+                        </h3>
+                        <p class="text-gray-400 text-sm mb-4">Accès aux projets, audits et recrutement d'experts.</p>
+                        <button onclick="showLogin('enterprise')" class="w-full bg-as2-blue text-white font-bold py-3 rounded-lg text-base hover:bg-as2-blue-dark transition-colors">
+                            Continuer
+                        </button>
+                    </div>
+
+                    <!-- Option Expert BIM -->
+                    <div class="bg-as2-dark p-6 rounded-lg shadow-xl border border-gray-700 transition-transform hover:scale-[1.03] hover:border-as2-blue duration-300">
+                        <h3 class="text-2xl font-bold text-as2-blue mb-2 flex items-center justify-center">
+                            <i data-lucide="user-check" class="w-6 h-6 mr-2"></i> Expert BIM
+                        </h3>
+                        <p class="text-gray-400 text-sm mb-4">Accès aux formations, missions et gestion de profil.</p>
+                        <button onclick="showLogin('expert')" class="w-full bg-as2-blue text-white font-bold py-3 rounded-lg text-base hover:bg-as2-blue-dark transition-colors">
+                            Continuer
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Lien Admin pour la démo -->
+                <div class="mt-8">
+                     <a href="#" onclick="showLogin('admin')" class="text-sm font-semibold text-gray-500 hover:text-as2-red-admin transition-colors flex items-center justify-center">
+                         <i data-lucide="key" class="w-4 h-4 mr-2"></i> Accès Administrateur (Back-Office)
+                     </a>
+                </div>
+
+                <button onclick="showScreen('home')" class="mt-4 text-sm text-gray-500 hover:text-as2-blue transition-colors">Retour à l'accueil</button>
+            </div>
+        </div>
+
+        <!-- Écran Login (Canevas de Connexion) -->
+        <div id="screen-login" class="page-screen">
+            <div class="max-w-md mx-auto bg-as2-dark-light p-8 rounded-xl shadow-2xl mt-16 text-center">
+                <h1 class="text-3xl font-bold text-as2-blue mb-6" id="login-title">Connexion</h1>
+                <p class="text-gray-400 mb-8">Veuillez entrer vos identifiants pour accéder à votre espace <span id="login-type" class="font-semibold text-white"></span>.</p>
+                <!-- Formulaire de connexion simplifié -->
+                <form id="login-form">
+                    <div class="mb-4">
+                        <!-- Placeholder vide, pas d'exemple -->
+                        <input type="email" id="login-email" placeholder="Email" class="w-full px-4 py-3 rounded-lg bg-as2-dark border border-gray-700 focus:border-as2-blue focus:ring-as2-blue text-white">
+                    </div>
+                    <div class="mb-6">
+                         <!-- Placeholder vide, pas d'exemple -->
+                        <input type="password" placeholder="Mot de passe" class="w-full px-4 py-3 rounded-lg bg-as2-dark border border-gray-700 focus:border-as2-blue focus:ring-as2-blue text-white">
+                    </div>
+                    <!-- Instruction explicite pour la démo -->
+                    <p class="text-sm text-gray-500 mb-4" id="login-demo-text">Utilisez ing@ask.com (Entreprise) ou ali.cherif@expert.com (Expert) pour la démo. Mot de passe: 123456</p>
+                    <button type="submit" class="w-full bg-as2-blue text-white font-bold py-3 rounded-lg text-lg hover:bg-as2-blue-dark transition-colors shadow-lg">
+                        Se Connecter
+                    </button>
+                </form>
+                <button onclick="showLoginSelection()" class="mt-4 text-sm text-gray-500 hover:text-as2-blue transition-colors flex items-center mx-auto">
+                    <i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i> Retour à la sélection
+                </button>
+            </div>
+        </div>
+
+        <!-- NOUVEL ÉCRAN : Tableau de Bord Administrateur (Back-Office) -->
+        <div id="screen-dashboard-admin" class="page-screen">
+            <h1 class="text-4xl font-extrabold text-as2-red-admin mb-6 border-b pb-4 border-gray-700 flex items-center">
+                <i data-lucide="wrench" class="w-8 h-8 mr-3"></i> Plateforme Interne (Back-Office)
+            </h1>
+            <p class="text-lg text-gray-300 mb-10">Bienvenue, Administrateur. Console de gestion centrale de la plateforme AS2Built.</p>
+
+            <div class="bg-as2-dark-light rounded-xl shadow-2xl">
+                <!-- Tabs Navigation Admin -->
+                <div class="flex border-b border-gray-700">
+                    <button class="tab-button admin-active active" onclick="showPrivateScreen('admin', 'stats')">
+                        <i data-lucide="activity" class="w-5 h-5 inline mr-2"></i> Statistiques & KPIs
+                    </button>
+                    <button class="tab-button admin-active" onclick="showPrivateScreen('admin', 'users')">
+                        <i data-lucide="users" class="w-5 h-5 inline mr-2"></i> Gestion Utilisateurs
+                    </button>
+                    <button class="tab-button admin-active" onclick="showPrivateScreen('admin', 'services')">
+                        <i data-lucide="package" class="w-5 h-5 inline mr-2"></i> Gestion Services/Packs
+                    </button>
+                    <button class="tab-button admin-active" onclick="showPrivateScreen('admin', 'transactions')">
+                        <i data-lucide="dollar-sign" class="w-5 h-5 inline mr-2"></i> Transactions & Paiements
+                    </button>
+                    <button class="tab-button admin-active" onclick="showPrivateScreen('admin', 'modération')">
+                        <i data-lucide="clipboard-check" class="w-5 h-5 inline mr-2"></i> Modération & Support
+                    </button>
+                </div>
+
+                <!-- Tabs Content Admin -->
+                <div class="p-8">
+                    <div id="content-admin-stats" class="tab-content active">
+                        <h2 class="text-2xl font-bold text-as2-red-admin mb-6">Statistiques & Rapports (Analytics)</h2>
+                        <div class="grid md:grid-cols-3 gap-6">
+                            <div class="p-5 bg-as2-dark rounded-lg shadow-lg border border-red-900/50">
+                                <p class="text-sm text-gray-400">Total Utilisateurs (Actif)</p>
+                                <p class="text-4xl font-extrabold text-white">452</p>
+                            </div>
+                            <div class="p-5 bg-as2-dark rounded-lg shadow-lg border border-red-900/50">
+                                <p class="text-sm text-gray-400">Revenus Mensuels (Simulation)</p>
+                                <p class="text-4xl font-extrabold text-green-400">1.8M DZD</p>
+                            </div>
+                            <div class="p-5 bg-as2-dark rounded-lg shadow-lg border border-red-900/50">
+                                <p class="text-sm text-gray-400">Missions/Mois (Terminées)</p>
+                                <p class="text-4xl font-extrabold text-white">12</p>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-500 italic mt-6">Indicateurs clés : Nombre d'utilisateurs (Expert/Entreprise), Revenus, Services populaires, Taux d'engagement.</p>
+                    </div>
+
+                    <div id="content-admin-users" class="tab-content">
+                        <h2 class="text-2xl font-bold text-as2-red-admin mb-4">Gestion des Utilisateurs</h2>
+                        <div class="p-4 bg-as2-dark rounded-lg border border-gray-700">
+                             <h3 class="text-xl font-semibold text-white mb-3">Recherche Rapide & Actions</h3>
+                             <input type="text" placeholder="Rechercher par Email, Nom ou Rôle (Client/Expert)" class="w-full px-4 py-2 rounded-lg bg-as2-dark-light border border-gray-700 focus:border-as2-red-admin focus:ring-as2-red-admin text-white mb-4">
+                             <ul class="space-y-2 text-sm text-gray-400">
+                                 <li class="flex justify-between items-center bg-as2-dark-light p-2 rounded border border-gray-800"><span>**ASK spa** (ing@ask.com) - Client</span> <span class="text-yellow-400">Actif</span></li>
+                                 <li class="flex justify-between items-center bg-as2-dark-light p-2 rounded border border-gray-800"><span>**M. Ali Cherif** (ali.cherif@expert.com) - Expert</span> <span class="text-yellow-400">Actif</span></li>
+                                 <li class="flex justify-between items-center bg-as2-dark-light p-2 rounded border border-gray-800"><span>**Admin** (admin@as2built.com) - Administrateur</span> <span class="text-as2-red-admin">Superviseur</span></li>
+                                 <li class="flex justify-between items-center bg-as2-dark-light p-2 rounded border border-gray-800"><span>**Mme. Benali** (desactivé@mail.com) - Expert</span> <span class="text-red-500">Désactivé</span></li>
+                             </ul>
+                             <button class="mt-4 bg-as2-red-admin text-white font-bold py-2 px-4 rounded-lg text-sm hover:bg-red-700 transition-colors">
+                                 Créer Nouvel Utilisateur
+                            </button>
+                        </div>
+                        <p class="text-sm text-gray-500 italic mt-4">Fonctionnalités : Créer/modifier/désactiver les comptes clients et fournisseurs. Gérer les rôles et permissions.</p>
+                    </div>
+                    
+                    <div id="content-admin-services" class="tab-content">
+                        <h2 class="text-2xl font-bold text-as2-red-admin mb-4">Gestion des Services/Produits (Catalogue)</h2>
+                        <div class="overflow-x-auto p-4 bg-as2-dark rounded-lg border border-gray-700">
+                             <h3 class="text-xl font-semibold text-white mb-3">Packs de Certification</h3>
+                             <table class="min-w-full divide-y divide-gray-700 text-sm">
+                                <thead class="bg-as2-dark-light">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left font-medium text-white">Nom du Pack</th>
+                                        <th class="px-6 py-3 text-right font-medium text-white">Prix (DZD)</th>
+                                        <th class="px-6 py-3 text-center font-medium text-white">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-800">
+                                    <tr class="module-table-row">
+                                        <td class="px-6 py-4">Pack N°3: Stratège & Gestion de Projet</td>
+                                        <td class="px-6 py-4 text-right text-as2-blue">228 000</td>
+                                        <td class="px-6 py-4 text-center"><button class="text-sm text-yellow-500 hover:text-yellow-400">Modifier</button></td>
+                                    </tr>
+                                </tbody>
+                             </table>
+                             <button class="mt-4 bg-green-600 text-white font-bold py-2 px-4 rounded-lg text-sm hover:bg-green-700 transition-colors">
+                                 + Ajouter un Nouveau Pack
+                            </button>
+                        </div>
+                        <p class="text-sm text-gray-500 italic mt-4">Fonctionnalités : Ajouter/mettre à jour/retirer les offres de services, définir les prix, les descriptions et les catégories (Modules, Packs, Audits).</p>
+                    </div>
+                    
+                    <div id="content-admin-transactions" class="tab-content">
+                        <h2 class="text-2xl font-bold text-as2-red-admin mb-4">Gestion des Transactions et Paiements</h2>
+                         <div class="p-4 bg-as2-dark rounded-lg border border-gray-700">
+                             <h3 class="text-xl font-semibold text-white mb-3">Dernières Transactions (Novembre 2025)</h3>
+                             <ul class="space-y-2 text-sm text-gray-400">
+                                 <li class="flex justify-between items-center bg-as2-dark-light p-2 rounded border border-gray-800">
+                                     <span>#T9001 - Paiement Pack Expert BIM (M. Ali Cherif)</span> 
+                                     <span class="text-green-400 font-semibold">228 000 DZD</span>
+                                 </li>
+                                 <li class="flex justify-between items-center bg-as2-dark-light p-2 rounded border border-gray-800">
+                                     <span>#T9002 - Commission Mission A (ASK spa)</span> 
+                                     <span class="text-yellow-400 font-semibold">45 000 DZD</span>
+                                 </li>
+                                 <li class="flex justify-between items-center bg-as2-dark-light p-2 rounded border border-gray-800">
+                                     <span>#T9003 - Achat Module Scan-to-BIM</span> 
+                                     <span class="text-green-400 font-semibold">50 000 DZD</span>
+                                 </li>
+                             </ul>
+                         </div>
+                        <p class="text-sm text-gray-500 italic mt-4">Fonctionnalités : Suivi des commandes, gestion des factures, commissions et remboursements.</p>
+                    </div>
+                    
+                    <div id="content-admin-modération" class="tab-content">
+                        <h2 class="text-2xl font-bold text-as2-red-admin mb-4">Modération et Support</h2>
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <!-- Modération des Profils/Contenus -->
+                            <div class="p-4 bg-as2-dark rounded-lg border border-gray-700">
+                                <h3 class="text-xl font-semibold text-white mb-3 flex items-center"><i data-lucide="file-text" class="w-5 h-5 mr-2 text-yellow-400"></i> CVs en Attente d'Approbation</h3>
+                                <ul class="space-y-2 text-sm text-gray-400">
+                                     <li class="flex justify-between items-center bg-as2-dark-light p-2 rounded border border-gray-800"><span>CV M. Djeddi - Expert MEP</span> <span class="text-yellow-400">En attente</span></li>
+                                </ul>
+                                <p class="text-sm text-gray-500 mt-2">Examiner et approuver les nouveaux profils de prestataires (Experts BIM).</p>
+                            </div>
+                            <!-- Support Client -->
+                            <div class="p-4 bg-as2-dark rounded-lg border border-gray-700">
+                                <h3 class="text-xl font-semibold text-white mb-3 flex items-center"><i data-lucide="message-circle" class="w-5 h-5 mr-2 text-red-400"></i> Tickets de Support Ouverts</h3>
+                                <ul class="space-y-2 text-sm text-gray-400">
+                                     <li class="flex justify-between items-center bg-as2-dark-light p-2 rounded border border-gray-800"><span>Ticket #SU45 - Problème Facturation</span> <span class="text-red-500">Urgent</span></li>
+                                </ul>
+                                <p class="text-sm text-gray-500 mt-2">Gérer les tickets de support et les plaintes clients.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button onclick="showScreen('home')" class="mt-8 text-as2-red-admin hover:text-white transition-colors flex items-center">
+                <i data-lucide="log-out" class="w-5 h-5 mr-2"></i> Déconnexion (Admin)
+            </button>
+        </div>
+
+
+        <!-- Écran Tableau de Bord Entreprise (Contenu inchangé) -->
+        <div id="screen-dashboard-enterprise" class="page-screen">
+            <h1 class="text-4xl font-extrabold text-white mb-6 border-b pb-4 border-gray-700">Espace Entreprise</h1>
+            <!-- Mise à jour du message de bienvenue -->
+            <p class="text-lg text-gray-300 mb-10">Bienvenue, <span id="welcome-enterprise" class="font-bold text-as2-blue"></span>. Gérez votre plateforme BIM centralisée.</p>
+
+            <div class="bg-as2-dark-light rounded-xl shadow-2xl">
+                <!-- Tabs Navigation -->
+                <div class="flex border-b border-gray-700">
+                    <button class="tab-button active" onclick="showPrivateScreen('enterprise', 'dashboard')">
+                        <i data-lucide="layout-dashboard" class="w-5 h-5 inline mr-2"></i> Tableau de Bord Entreprise
+                    </button>
+                    <button class="tab-button" onclick="showPrivateScreen('enterprise', 'expert')">
+                        <i data-lucide="user-plus" class="w-5 h-5 inline mr-2"></i> Recruter un Expert
+                    </button>
+                    <button class="tab-button" onclick="showPrivateScreen('enterprise', 'projects')">
+                        <i data-lucide="folder-open" class="w-5 h-5 inline mr-2"></i> Mes Projets
+                    </button>
+                    <button class="tab-button" onclick="showPrivateScreen('enterprise', 'audit')">
+                        <i data-lucide="bar-chart-3" class="w-5 h-5 inline mr-2"></i> Mon Audit BIM
+                    </button>
+                    <button class="tab-button" onclick="showPrivateScreen('enterprise', 'formations')">
+                        <i data-lucide="graduation-cap" class="w-5 h-5 inline mr-2"></i> Mes Formations
+                    </button>
+                </div>
+
+                <!-- Tabs Content -->
+                <div class="p-8">
+                    <div id="content-enterprise-dashboard" class="tab-content active">
+                        <h2 class="text-2xl font-bold text-as2-blue mb-4">Statistiques Clés et Calendrier</h2>
+                        <div class="grid md:grid-cols-3 gap-6">
+                            <div class="p-5 bg-as2-dark rounded-lg shadow-lg border border-gray-700">
+                                <p class="text-sm text-gray-400">Projets Actifs</p>
+                                <p class="text-4xl font-extrabold text-white">03</p>
+                            </div>
+                            <div class="p-5 bg-as2-dark rounded-lg shadow-lg border border-gray-700">
+                                <p class="text-sm text-gray-400">Économies Estimées (Clash Res.)</p>
+                                <p class="text-4xl font-extrabold text-green-400">9%</p>
+                            </div>
+                            <div class="p-5 bg-as2-dark rounded-lg shadow-lg border border-gray-700">
+                                <p class="text-sm text-gray-400">Experts en Mission</p>
+                                <p class="text-4xl font-extrabold text-white">01</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Calendrier d'Activités (Entreprise) -->
+                        <div class="mt-8 p-6 bg-as2-dark rounded-lg shadow-lg border border-gray-700">
+                            <h3 class="text-xl font-bold text-white mb-4 flex items-center">
+                                <i data-lucide="calendar" class="w-5 h-5 mr-3 text-as2-blue"></i> Calendrier des Événements (Novembre 2025)
+                            </h3>
+                            <div class="calendar-grid">
+                                <div class="calendar-header-day">Lun</div>
+                                <div class="calendar-header-day">Mar</div>
+                                <div class="calendar-header-day">Mer</div>
+                                <div class="calendar-header-day">Jeu</div>
+                                <div class="calendar-header-day">Ven</div>
+                                <div class="calendar-header-day">Sam</div>
+                                <div class="calendar-header-day">Dim</div>
+                                <!-- Jours vides (Octobre) -->
+                                <div class="calendar-day-box text-gray-600">27</div>
+                                <div class="calendar-day-box text-gray-600">28</div>
+                                <div class="calendar-day-box text-gray-600">29</div>
+                                <div class="calendar-day-box text-gray-600">30</div>
+                                <div class="calendar-day-box text-gray-600">31</div>
+                                <!-- Jours de Novembre -->
+                                <div class="calendar-day-box">1</div>
+                                <div class="calendar-day-box">2</div>
+                                <div class="calendar-day-box">3</div>
+                                <div class="calendar-day-box">4</div>
+                                <div class="calendar-day-box event" title="Réunion de lancement Projet 03">5 <div class="event-dot"></div></div>
+                                <div class="calendar-day-box">6</div>
+                                <div class="calendar-day-box">7</div>
+                                <div class="calendar-day-box">8</div>
+                                <div class="calendar-day-box">9</div>
+                                <div class="calendar-day-box current-day event" title="Point de Coordination Projet 01">10 <div class="event-dot"></div></div>
+                                <div class="calendar-day-box">11</div>
+                                <div class="calendar-day-box">12</div>
+                                <div class="calendar-day-box">13</div>
+                                <div class="calendar-day-box">14</div>
+                                <div class="calendar-day-box event" title="Fin de la mission Audit BIM">15 <div class="event-dot"></div></div>
+                                <div class="calendar-day-box">16</div>
+                                <div class="calendar-day-box">17</div>
+                                <div class="calendar-day-box">18</div>
+                                <div class="calendar-day-box">19</div>
+                                <div class="calendar-day-box">20</div>
+                                <div class="calendar-day-box">21</div>
+                                <div class="calendar-day-box">22</div>
+                                <div class="calendar-day-box">23</div>
+                                <div class="calendar-day-box">24</div>
+                                <div class="calendar-day-box">25</div>
+                                <div class="calendar-day-box event" title="Début de la formation: Expert CDE Manager">26 <div class="event-dot"></div></div>
+                                <div class="calendar-day-box">27</div>
+                                <div class="calendar-day-box">28</div>
+                                <div class="calendar-day-box">29</div>
+                                <div class="calendar-day-box">30</div>
+                                <!-- Jours vides (Décembre) -->
+                                <div class="calendar-day-box text-gray-600">1</div>
+                                <div class="calendar-day-box text-gray-600">2</div>
+                            </div>
+                            <p class="text-xs text-gray-500 italic mt-4">Cliquez sur un jour avec un point bleu pour voir le détail de l'événement.</p>
+                        </div>
+                        <p class="text-gray-500 italic mt-6">Utilisez les onglets ci-dessus pour naviguer dans vos outils.</p>
+                    </div>
+
+                    <div id="content-enterprise-expert" class="tab-content">
+                        <h2 class="text-2xl font-bold text-as2-blue mb-4">Recruter un Expert BIM Certifié</h2>
+                        <p class="text-gray-400">Lancez une recherche ou publiez une mission pour accéder à notre pool d'experts validés AS2Built.</p>
+                        <button class="mt-4 bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-yellow-700 transition-colors">
+                            Publier une Offre de Mission
+                        </button>
+                    </div>
+
+                    <!-- Mise à jour: Section Projets - N'affiche que 'Projets en Cours' et 'Projets Conclus' -->
+                    <div id="content-enterprise-projects" class="tab-content">
+                        <h2 class="text-2xl font-bold text-as2-blue mb-4">Gestion des Projets</h2>
+                        <p class="text-sm text-gray-400 mb-6">Filtrez les projets ci-dessous ou cliquez sur un projet pour accéder à son environnement de collaboration (Simulation ACC).</p>
+                        
+                        <!-- Filtre de Projet -->
+                        <div class="mb-6">
+                            <input type="text" id="filter-enterprise-projects" placeholder="Filtrer les projets par nom, phase ou expert..." onkeyup="filterProjects('enterprise')" class="w-full px-4 py-2 rounded-lg bg-as2-dark border border-gray-700 focus:border-as2-blue focus:ring-as2-blue text-white">
+                        </div>
+
+                        <!-- Liste des projets réorganisée -->
+                        <div class="space-y-6" id="list-enterprise-projects">
+                            <!-- Section Projets en Cours (GARDÉE) -->
+                            <div>
+                                <h3 class="text-xl font-semibold text-white mb-3 flex items-center">
+                                    <i data-lucide="loader" class="w-5 h-5 mr-3 text-yellow-400 animate-spin"></i> Projets en Cours
+                                </h3>
+                                <div class="space-y-4">
+                                    <a href="#" onclick="simulateACC('Projet 01: Tour Résidentielle')" data-search="projet 01 tour résidentielle coordination M. Karim en cours" class="project-link">
+                                        <strong class="font-semibold">Projet 01: Tour Résidentielle</strong> - Phase Coordination (Expert BIM: M. Karim)
+                                        <i data-lucide="monitor" class="w-4 h-4 inline ml-2 text-white"></i>
+                                    </a>
+                                    <a href="#" onclick="simulateACC('Projet 02: Centre Hospitalier')" data-search="projet 02 centre hospitalier audit 5D en cours" class="project-link">
+                                        <strong class="font-semibold">Projet 02: Centre Hospitalier</strong> - Audit 5D en cours
+                                        <i data-lucide="monitor" class="w-4 h-4 inline ml-2 text-white"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <!-- Section Projets Conclus (GARDÉE) -->
+                            <div>
+                                <h3 class="text-xl font-semibold text-white mb-3 flex items-center">
+                                    <i data-lucide="check-circle" class="w-5 h-5 mr-3 text-green-400"></i> Projets Conclus
+                                </h3>
+                                <div class="space-y-4">
+                                     <a href="#" onclick="simulateACC('Projet 03: Usine Pilote')" data-search="projet 03 usine pilote modélisation as-built 7D conclu" class="project-link concluded">
+                                        <strong class="font-semibold">Projet 03: Usine Pilote</strong> - Modélisation As-Built 7D (Conclu)
+                                        <i data-lucide="monitor" class="w-4 h-4 inline ml-2"></i>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Section Offres / Appels d'offres (SUPPRIMÉE) -->
+                        </div>
+                    </div>
+
+                    <div id="content-enterprise-audit" class="tab-content">
+                        <h2 class="text-2xl font-bold text-as2-blue mb-4">Mon Audit BIM</h2>
+                        <p class="text-gray-400">Évaluez la maturité BIM de votre entreprise et recevez un plan d'action personnalisé.</p>
+                        <button class="mt-4 bg-red-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-700 transition-colors">
+                            Démarrer l'Audit de Maturité
+                        </button>
+                    </div>
+
+                    <div id="content-enterprise-formations" class="tab-content">
+                        <h2 class="text-2xl font-bold text-as2-blue mb-4">Mes Formations</h2>
+                        
+                        <div class="space-y-6">
+                            <!-- Section Formation en Cours -->
+                            <div class="p-4 bg-as2-dark rounded-lg border border-yellow-600/50">
+                                <h3 class="text-xl font-semibold text-yellow-400 mb-3 flex items-center">
+                                    <i data-lucide="loader" class="w-5 h-5 mr-3 animate-spin"></i> Formations en Cours
+                                </h3>
+                                <ul class="space-y-2 text-gray-400">
+                                    <li class="flex items-center"><i data-lucide="arrow-right" class="w-4 h-4 mr-2 text-yellow-400"></i> BIM Manager Certification - Module 2 (50% Complété)</li>
+                                </ul>
+                                <p class="text-xs text-gray-500 mt-2">Échéance: 15 Décembre 2025</p>
+                            </div>
+                            
+                            <!-- Section Formation Complétées -->
+                            <div class="p-4 bg-as2-dark rounded-lg border border-green-600/50">
+                                <h3 class="text-xl font-semibold text-green-400 mb-3 flex items-center">
+                                    <i data-lucide="check-circle" class="w-5 h-5 mr-3"></i> Formations Complétées
+                                </h3>
+                                <ul class="space-y-2 text-gray-400">
+                                    <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 mr-2 text-green-400"></i> BIM Coordinator - Équipe Modélisation (Juillet 2024)</li>
+                                    <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 mr-2 text-green-400"></i> Introduction à la 5D BIM (Mai 2024)</li>
+                                </ul>
+                            </div>
+                            
+                             <!-- Section Ajouter une Formation / Catalogue de Packs -->
+                            <div class="p-4 bg-as2-dark-light rounded-lg border border-as2-blue/50">
+                                <h3 class="text-2xl font-bold text-as2-blue mb-6 flex items-center">
+                                    <i data-lucide="plus-circle" class="w-6 h-6 mr-3"></i> Catalogue de Formations
+                                </h3>
+                                
+                                <h4 class="text-xl font-bold text-white mb-4">1. Packs de Certification (Tarif Avantageux)</h4>
+
+                                <div class="grid md:grid-cols-3 gap-6 mb-10">
+                                    
+                                    <!-- Pack 1: Immersion BIM (Niveau 0-1) -->
+                                    <div class="pack-card bg-as2-dark p-4 rounded-xl border-t-4 border-gray-400">
+                                        <h4 class="text-xl font-extrabold text-gray-300 mb-2">Pack N°1: Immersion BIM</h4>
+                                        <p class="text-sm font-semibold text-gray-500 mb-4">Rôle: Acteur BIM / Lecteur | Niveau 0-1</p>
+                                        <ul class="text-sm text-gray-400 space-y-1 mb-4 list-disc pl-5">
+                                            <li>Fondamentaux BIM</li>
+                                            <li>Lecture de Maquette</li>
+                                        </ul>
+                                        <p class="text-xs text-right font-bold text-green-400">TOTAL: 21 heures</p>
+                                        <div class="mt-4 pt-3 border-t border-gray-700 flex justify-between items-center">
+                                            <span class="text-xl font-bold text-as2-blue">58 500 DZD</span> <!-- (40k + 25k) * 0.9 = 58 500 -->
+                                            <button class="bg-gray-700 text-white text-xs px-3 py-1 rounded hover:bg-as2-blue transition-colors">Choisir ce Pack</button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Pack 2: Spécialiste & Production (Niveau 1-2) -->
+                                    <div class="pack-card bg-as2-dark p-4 rounded-xl border-t-4 border-yellow-400">
+                                        <h4 class="text-xl font-extrabold text-yellow-400 mb-2">Pack N°2: Spécialiste & Production</h4>
+                                        <p class="text-sm font-semibold text-gray-500 mb-4">Rôle: BIM Modeleur / Spécialiste | Niveau 1-2</p>
+                                        <ul class="text-sm text-gray-400 space-y-1 mb-4 list-disc pl-5">
+                                            <li>Fondamentaux BIM (Rappel)</li>
+                                            <li>Spécialiste Revit (40h)</li>
+                                            <li>BIM 5D (Quantités)</li>
+                                        </ul>
+                                        <p class="text-xs text-right font-bold text-green-400">TOTAL: 78 heures (Exemple)</p>
+                                        <div class="mt-4 pt-3 border-t border-gray-700 flex justify-between items-center">
+                                            <span class="text-xl font-bold text-as2-blue">174 250 DZD</span> <!-- (40k + 90k + 65k) * 0.85 = 174 250 -->
+                                            <button class="bg-yellow-600 text-white text-xs px-3 py-1 rounded hover:bg-yellow-700 transition-colors">Choisir ce Pack</button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Pack 3: Stratège & Gestion de Projet (Niveau 2-3) -->
+                                    <div class="pack-card bg-as2-dark p-4 rounded-xl border-t-4 border-red-500">
+                                        <h4 class="text-xl font-extrabold text-red-400 mb-2">Pack N°3: Stratège & Gestion de Projet</h4>
+                                        <p class="text-sm font-semibold text-gray-500 mb-4">Rôle: BIM Coordinateur / Manager | Niveau 2-3</p>
+                                        <ul class="text-sm text-gray-400 space-y-1 mb-4 list-disc pl-5">
+                                            <li>BIM Manager Stratégique (40h)</li>
+                                            <li>BIM Coordinateur (Synthèse) (28h)</li>
+                                            <li>Expert CDE Manager (28h)</li>
+                                        </ul>
+                                        <p class="text-xs text-right font-bold text-green-400">TOTAL: 96 heures</p>
+                                        <div class="mt-4 pt-3 border-t border-gray-700 flex justify-between items-center">
+                                            <span class="text-xl font-bold text-as2-blue">228 000 DZD</span> <!-- (120k + 80k + 85k) * 0.80 = 228 000 -->
+                                            <button class="bg-red-600 text-white text-xs px-3 py-1 rounded hover:bg-red-700 transition-colors">Choisir ce Pack</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <h4 class="text-xl font-bold text-white mb-4 border-t border-gray-700 pt-4">2. Modules de Spécialisation à la Carte</h4>
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-gray-700">
+                                        <thead class="bg-as2-dark">
+                                            <tr>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Module</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider hidden sm:table-cell">Objectif</th>
+                                                <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">Durée (h)</th>
+                                                <th class="px-6 py-3 text-right text-xs font-medium text-white uppercase tracking-wider">Prix (DZD)</th>
+                                                <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-gray-800 text-sm text-gray-400">
+                                            <!-- Fondamentaux du BIM -->
+                                            <tr class="module-table-row">
+                                                <td class="px-6 py-4 font-semibold text-white">Fondamentaux du BIM</td>
+                                                <td class="px-6 py-4 hidden sm:table-cell">Comprendre les concepts, le vocabulaire (LOD, IFC) et les enjeux du BIM.</td>
+                                                <td class="px-6 py-4 text-center text-yellow-400">14</td>
+                                                <td class="px-6 py-4 text-right text-as2-blue">40 000</td>
+                                                <td class="px-6 py-4 text-center"><button class="bg-as2-blue text-white text-xs px-2 py-1 rounded hover:bg-as2-blue-dark">Ajouter</button></td>
+                                            </tr>
+                                            <!-- Lecture de Maquette Numérique -->
+                                            <tr class="module-table-row">
+                                                <td class="px-6 py-4 font-semibold text-white">Lecture de Maquette Numérique</td>
+                                                <td class="px-6 py-4 hidden sm:table-cell">Savoir utiliser une visionneuse pour naviguer et extraire des informations d'un modèle (IFC).</td>
+                                                <td class="px-6 py-4 text-center text-yellow-400">7</td>
+                                                <td class="px-6 py-4 text-right text-as2-blue">25 000</td>
+                                                <td class="px-6 py-4 text-center"><button class="bg-as2-blue text-white text-xs px-2 py-1 rounded hover:bg-as2-blue-dark">Ajouter</button></td>
+                                            </tr>
+                                             <!-- Spécialiste Revit (Architecture) -->
+                                            <tr class="module-table-row">
+                                                <td class="px-6 py-4 font-semibold text-white">Spécialiste Revit (Archi)</td>
+                                                <td class="px-6 py-4 hidden sm:table-cell">Maîtriser la modélisation architecturale complète sur Revit.</td>
+                                                <td class="px-6 py-4 text-center text-yellow-400">40</td>
+                                                <td class="px-6 py-4 text-right text-as2-blue">90 000</td>
+                                                <td class="px-6 py-4 text-center"><button class="bg-as2-blue text-white text-xs px-2 py-1 rounded hover:bg-as2-blue-dark">Ajouter</button></td>
+                                            </tr>
+                                            <!-- Spécialiste Revit (Structure) -->
+                                            <tr class="module-table-row">
+                                                <td class="px-6 py-4 font-semibold text-white">Spécialiste Revit (Structure)</td>
+                                                <td class="px-6 py-4 hidden sm:table-cell">Maîtriser la modélisation des éléments porteurs et documentation.</td>
+                                                <td class="px-6 py-4 text-center text-yellow-400">40</td>
+                                                <td class="px-6 py-4 text-right text-as2-blue">90 000</td>
+                                                <td class="px-6 py-4 text-center"><button class="bg-as2-blue text-white text-xs px-2 py-1 rounded hover:bg-as2-blue-dark">Ajouter</button></td>
+                                            </tr>
+                                            <!-- Spécialiste Revit (MEP/Fluides) -->
+                                            <tr class="module-table-row">
+                                                <td class="px-6 py-4 font-semibold text-white">Spécialiste Revit (MEP/Fluides)</td>
+                                                <td class="px-6 py-4 hidden sm:table-cell">Maîtriser la modélisation et la documentation des réseaux (CVC, plomberie, électricité).</td>
+                                                <td class="px-6 py-4 text-center text-yellow-400">40</td>
+                                                <td class="px-6 py-4 text-right text-as2-blue">90 000</td>
+                                                <td class="px-6 py-4 text-center"><button class="bg-as2-blue text-white text-xs px-2 py-1 rounded hover:bg-as2-blue-dark">Ajouter</button></td>
+                                            </tr>
+                                            <!-- BIM Coordinateur (Synthèse) -->
+                                            <tr class="module-table-row">
+                                                <td class="px-6 py-4 font-semibold text-white">BIM Coordinateur (Synthèse)</td>
+                                                <td class="px-6 py-4 hidden sm:table-cell">Compiler les modèles, détecter les collisions et gérer les rapports (Navisworks/Solibri).</td>
+                                                <td class="px-6 py-4 text-center text-yellow-400">28</td>
+                                                <td class="px-6 py-4 text-right text-as2-blue">80 000</td>
+                                                <td class="px-6 py-4 text-center"><button class="bg-as2-blue text-white text-xs px-2 py-1 rounded hover:bg-as2-blue-dark">Ajouter</button></td>
+                                            </tr>
+                                            <!-- Expert CDE Manager -->
+                                            <tr class="module-table-row">
+                                                <td class="px-6 py-4 font-semibold text-white">Expert CDE Manager</td>
+                                                <td class="px-6 py-4 hidden sm:table-cell">Administrer l'Environnement Commun de Données (ACDat) et ses flux (ISO 19650).</td>
+                                                <td class="px-6 py-4 text-center text-yellow-400">28</td>
+                                                <td class="px-6 py-4 text-right text-as2-blue">85 000</td>
+                                                <td class="px-6 py-4 text-center"><button class="bg-as2-blue text-white text-xs px-2 py-1 rounded hover:bg-as2-blue-dark">Ajouter</button></td>
+                                            </tr>
+                                            <!-- BIM 4D (Planification) -->
+                                            <tr class="module-table-row">
+                                                <td class="px-6 py-4 font-semibold text-white">BIM 4D (Planification)</td>
+                                                <td class="px-6 py-4 hidden sm:table-cell">Lier le modèle 3D au planning pour la simulation de chantier.</td>
+                                                <td class="px-6 py-4 text-center text-yellow-400">21</td>
+                                                <td class="px-6 py-4 text-right text-as2-blue">65 000</td>
+                                                <td class="px-6 py-4 text-center"><button class="bg-as2-blue text-white text-xs px-2 py-1 rounded hover:bg-as2-blue-dark">Ajouter</button></td>
+                                            </tr>
+                                            <!-- BIM 5D (Quantités & Coûts) -->
+                                            <tr class="module-table-row">
+                                                <td class="px-6 py-4 font-semibold text-white">BIM 5D (Quantités & Coûts)</td>
+                                                <td class="px-6 py-4 hidden sm:table-cell">Extraction de métrés précis et liaison aux bases de prix.</td>
+                                                <td class="px-6 py-4 text-center text-yellow-400">21</td>
+                                                <td class="px-6 py-4 text-right text-as2-blue">65 000</td>
+                                                <td class="px-6 py-4 text-center"><button class="bg-as2-blue text-white text-xs px-2 py-1 rounded hover:bg-as2-blue-dark">Ajouter</button></td>
+                                            </tr>
+                                             <!-- BIM Manager Stratégique -->
+                                            <tr class="module-table-row">
+                                                <td class="px-6 py-4 font-semibold text-white">BIM Manager Stratégique</td>
+                                                <td class="px-6 py-4 hidden sm:table-cell">Définir la stratégie BIM, rédiger le CdBIM et gérer les protocoles du projet.</td>
+                                                <td class="px-6 py-4 text-center text-yellow-400">40</td>
+                                                <td class="px-6 py-4 text-right text-as2-blue">120 000</td>
+                                                <td class="px-6 py-4 text-center"><button class="bg-as2-blue text-white text-xs px-2 py-1 rounded hover:bg-as2-blue-dark">Ajouter</button></td>
+                                            </tr>
+                                             <!-- Scan-to-BIM -->
+                                            <tr class="module-table-row">
+                                                <td class="px-6 py-4 font-semibold text-white">Scan-to-BIM</td>
+                                                <td class="px-6 py-4 hidden sm:table-cell">Comprendre l'acquisition de nuages de points et la modélisation de l'existant.</td>
+                                                <td class="px-6 py-4 text-center text-yellow-400">14</td>
+                                                <td class="px-6 py-4 text-right text-as2-blue">50 000</td>
+                                                <td class="px-6 py-4 text-center"><button class="bg-as2-blue text-white text-xs px-2 py-1 rounded hover:bg-as2-blue-dark">Ajouter</button></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <h4 class="text-xl font-bold text-as2-blue mt-10 mb-4 border-t border-gray-700 pt-4">3. Autres Services (Consulting)</h4>
+                                <ul class="space-y-2 text-gray-400 text-sm">
+                                    <li class="flex justify-between items-center bg-as2-dark p-3 rounded"><span class="font-semibold text-white">Audit de Modèles (Consulting)</span> <span class="text-xs text-gray-500">Service Client Final</span></li>
+                                    <li class="flex justify-between items-center bg-as2-dark p-3 rounded"><span class="font-semibold text-white">Coaching Personnalisé BIM Manager</span> <span class="text-xs text-gray-500">Accompagnement Niveau 3</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button onclick="showScreen('home')" class="mt-8 text-as2-blue hover:text-white transition-colors flex items-center">
+                <i data-lucide="log-out" class="w-5 h-5 mr-2"></i> Déconnexion
+            </button>
+        </div>
+
+        <!-- Écran Tableau de Bord Expert BIM (Contenu inchangé) -->
+        <div id="screen-dashboard-expert" class="page-screen">
+            <h1 class="text-4xl font-extrabold text-white mb-6 border-b pb-4 border-gray-700">Espace Expert BIM</h1>
+            <!-- Mise à jour du message de bienvenue -->
+            <p class="text-lg text-gray-300 mb-10">Bienvenue, <span id="welcome-expert" class="font-bold text-as2-blue"></span>. Gérez votre carrière et vos missions.</p>
+
+            <div class="bg-as2-dark-light rounded-xl shadow-2xl">
+                <!-- Tabs Navigation -->
+                <div class="flex border-b border-gray-700">
+                    <button class="tab-button active" onclick="showPrivateScreen('expert', 'dashboard')">
+                        <i data-lucide="layout-dashboard" class="w-5 h-5 inline mr-2"></i> Tableau de Bord Expert
+                    </button>
+                    <button class="tab-button" onclick="showPrivateScreen('expert', 'projects')">
+                        <i data-lucide="folder-open" class="w-5 h-5 inline mr-2"></i> Mes Projets
+                    </button>
+                    <button class="tab-button" onclick="showPrivateScreen('expert', 'formations')">
+                        <i data-lucide="graduation-cap" class="w-5 h-5 inline mr-2"></i> Mes Formations
+                    </button>
+                    <!-- Texte de l'onglet mis à jour -->
+                    <button class="tab-button" onclick="showPrivateScreen('expert', 'cv')">
+                        <i data-lucide="file-text" class="w-5 h-5 inline mr-2"></i> Déposer / Mettre à Jour mon CV
+                    </button>
+                </div>
+
+                <!-- Tabs Content -->
+                <div class="p-8">
+                    <div id="content-expert-dashboard" class="tab-content active">
+                        <h2 class="text-2xl font-bold text-as2-blue mb-4">Synthèse de votre Profil et Calendrier</h2>
+                        <div class="grid md:grid-cols-3 gap-6">
+                            <div class="p-5 bg-as2-dark rounded-lg shadow-lg border border-gray-700">
+                                <p class="text-sm text-gray-400">Niveau de Certification</p>
+                                <p class="text-4xl font-extrabold text-yellow-400">BIM Coordinator</p>
+                            </div>
+                            <div class="p-5 bg-as2-dark rounded-lg shadow-lg border border-gray-700">
+                                <p class="text-sm text-gray-400">Missions Terminées</p>
+                                <p class="text-4xl font-extrabold text-white">04</p>
+                            </div>
+                            <div class="p-5 bg-as2-dark rounded-lg shadow-lg border border-gray-700">
+                                <p class="text-sm text-gray-400">Prochaine Échéance</p>
+                                <p class="text-4xl font-extrabold text-green-400">10 Jours</p>
+                            </div>
+                        </div>
+                        
+                         <!-- Calendrier d'Activités (Expert) -->
+                        <div class="mt-8 p-6 bg-as2-dark rounded-lg shadow-lg border border-gray-700">
+                            <h3 class="text-xl font-bold text-white mb-4 flex items-center">
+                                <i data-lucide="calendar" class="w-5 h-5 mr-3 text-as2-blue"></i> Calendrier des Événements (Novembre 2025)
+                            </h3>
+                            <div class="calendar-grid">
+                                <div class="calendar-header-day">Lun</div>
+                                <div class="calendar-header-day">Mar</div>
+                                <div class="calendar-header-day">Mer</div>
+                                <div class="calendar-header-day">Jeu</div>
+                                <div class="calendar-header-day">Ven</div>
+                                <div class="calendar-header-day">Sam</div>
+                                <div class="calendar-header-day">Dim</div>
+                                <!-- Jours vides (Octobre) -->
+                                <div class="calendar-day-box text-gray-600">27</div>
+                                <div class="calendar-day-box text-gray-600">28</div>
+                                <div class="calendar-day-box text-gray-600">29</div>
+                                <div class="calendar-day-box text-gray-600">30</div>
+                                <div class="calendar-day-box text-gray-600">31</div>
+                                <!-- Jours de Novembre -->
+                                <div class="calendar-day-box event" title="Début de la formation: BIM Manager">1 <div class="event-dot"></div></div>
+                                <div class="calendar-day-box">2</div>
+                                <div class="calendar-day-box">3</div>
+                                <div class="calendar-day-box">4</div>
+                                <div class="calendar-day-box">5</div>
+                                <div class="calendar-day-box">6</div>
+                                <div class="calendar-day-box">7</div>
+                                <div class="calendar-day-box">8</div>
+                                <div class="calendar-day-box">9</div>
+                                <div class="calendar-day-box current-day event" title="Point de Coordination Mission A">10 <div class="event-dot"></div></div>
+                                <div class="calendar-day-box">11</div>
+                                <div class="calendar-day-box">12</div>
+                                <div class="calendar-day-box">13</div>
+                                <div class="calendar-day-box">14</div>
+                                <div class="calendar-day-box event" title="Rendu du rapport de Mission B">15 <div class="event-dot"></div></div>
+                                <div class="calendar-day-box">16</div>
+                                <div class="calendar-day-box">17</div>
+                                <div class="calendar-day-box">18</div>
+                                <div class="calendar-day-box">19</div>
+                                <div class="calendar-day-box">20</div>
+                                <div class="calendar-day-box">21</div>
+                                <div class="calendar-day-box">22</div>
+                                <div class="calendar-day-box">23</div>
+                                <div class="calendar-day-box">24</div>
+                                <div class="calendar-day-box">25</div>
+                                <div class="calendar-day-box">26</div>
+                                <div class="calendar-day-box">27</div>
+                                <div class="calendar-day-box">28</div>
+                                <div class="calendar-day-box">29</div>
+                                <div class="calendar-day-box">30</div>
+                                <!-- Jours vides (Décembre) -->
+                                <div class="calendar-day-box text-gray-600">1</div>
+                                <div class="calendar-day-box text-gray-600">2</div>
+                            </div>
+                            <p class="text-xs text-gray-500 italic mt-4">Cliquez sur un jour avec un point bleu pour voir le détail de l'événement.</p>
+                        </div>
+                        <p class="text-gray-500 italic mt-6">Mettez à jour votre CV et consultez les offres de missions dans les onglets dédiés.</p>
+                    </div>
+
+                    <div id="content-expert-projects" class="tab-content">
+                        <h2 class="text-2xl font-bold text-as2-blue mb-4">Mes Missions en Cours et Passées</h2>
+                         <p class="text-sm text-gray-400 mb-6">Filtrez les missions ci-dessous ou cliquez sur une mission pour accéder à l'environnement de collaboration (Simulation ACC).</p>
+                         
+                         <!-- Filtre de Projet -->
+                        <div class="mb-6">
+                            <input type="text" id="filter-expert-projects" placeholder="Filtrer les missions par nom, statut ou entreprise..." onkeyup="filterProjects('expert')" class="w-full px-4 py-2 rounded-lg bg-as2-dark border border-gray-700 focus:border-as2-blue focus:ring-as2-blue text-white">
+                        </div>
+                         
+                         <!-- Liste des projets réorganisée -->
+                         <div class="space-y-6" id="list-expert-projects">
+                            <!-- Section Projets en Cours -->
+                            <div>
+                                <h3 class="text-xl font-semibold text-white mb-3 flex items-center">
+                                    <i data-lucide="loader" class="w-5 h-5 mr-3 text-yellow-400 animate-spin"></i> Missions en Cours
+                                </h3>
+                                <div class="space-y-4">
+                                    <a href="#" onclick="simulateACC('Projet 01: Tour Résidentielle (Mission A)')" data-search="projet 01 tour résidentielle mission a en cours coordination structurelle" class="project-link">
+                                        <strong class="font-semibold">Projet 01: Tour Résidentielle (Mission A)</strong> - Coordination Structurelle.
+                                        <i data-lucide="monitor" class="w-4 h-4 inline ml-2 text-white"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <!-- Section Projets Conclus -->
+                            <div>
+                                <h3 class="text-xl font-semibold text-white mb-3 flex items-center">
+                                    <i data-lucide="check-circle" class="w-5 h-5 mr-3 text-green-400"></i> Missions Conclues
+                                </h3>
+                                <div class="space-y-4">
+                                     <a href="#" onclick="simulateACC('Projet 02: Groupe X (Mission B)')" data-search="projet 02 groupe x mission b terminée audit de modélisation conclu" class="project-link concluded">
+                                        <strong class="font-semibold">Projet 02: Groupe X (Mission B)</strong> - Audit de Modélisation (Conclue)
+                                        <i data-lucide="monitor" class="w-4 h-4 inline ml-2"></i>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Section Offres -->
+                            <div>
+                                <h3 class="text-xl font-semibold text-white mb-3 flex items-center">
+                                    <i data-lucide="file-text" class="w-5 h-5 mr-3 text-yellow-400"></i> Nouvelles Offres
+                                </h3>
+                                <div class="space-y-4">
+                                    <a href="#" onclick="showMessage('Simulation: Voir l\'offre pour l\'Hôtel 5 étoiles', 'calendar')" data-search="projet 03 hôtel 5 étoiles offre nouvelle" class="project-link offer">
+                                        <strong class="font-semibold">Projet 03: Hôtel 5 Étoiles</strong> - Recherche BIM Manager (Phase DCE)
+                                        <i data-lucide="file-text" class="w-4 h-4 inline ml-2"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="content-expert-formations" class="tab-content">
+                        <h2 class="text-2xl font-bold text-as2-blue mb-4">Mes Formations</h2>
+                        
+                        <div class="space-y-6">
+                            <!-- Section Formation en Cours -->
+                            <div class="p-4 bg-as2-dark rounded-lg border border-yellow-600/50">
+                                <h3 class="text-xl font-semibold text-yellow-400 mb-3 flex items-center">
+                                    <i data-lucide="loader" class="w-5 h-5 mr-3 animate-spin"></i> Formations en Cours
+                                </h3>
+                                <ul class="space-y-2 text-gray-400">
+                                    <li class="flex items-center"><i data-lucide="arrow-right" class="w-4 h-4 mr-2 text-yellow-400"></i> BIM Manager Certification (Début 1er Décembre 2025)</li>
+                                </ul>
+                                <p class="text-xs text-gray-500 mt-2">Fin estimée: Fin Février 2026</p>
+                            </div>
+                            
+                            <!-- Section Formation Complétées -->
+                            <div class="p-4 bg-as2-dark rounded-lg border border-green-600/50">
+                                <h3 class="text-xl font-semibold text-green-400 mb-3 flex items-center">
+                                    <i data-lucide="check-circle" class="w-5 h-5 mr-3"></i> Formations Complétées
+                                </h3>
+                                <ul class="space-y-2 text-gray-400">
+                                    <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 mr-2 text-green-400"></i> BIM Coordinator Certifié (Juillet 2024)</li>
+                                </ul>
+                            </div>
+                            
+                            <!-- Section Ajouter une Formation / Catalogue de Packs -->
+                            <div class="p-4 bg-as2-dark-light rounded-lg border border-as2-blue/50">
+                                <h3 class="text-2xl font-bold text-as2-blue mb-6 flex items-center">
+                                    <i data-lucide="plus-circle" class="w-6 h-6 mr-3"></i> Catalogue de Formations
+                                </h3>
+                                
+                                <h4 class="text-xl font-bold text-white mb-4">1. Packs de Certification (Tarif Avantageux)</h4>
+
+                                <div class="grid md:grid-cols-3 gap-6 mb-10">
+                                    
+                                    <!-- Pack 1: Immersion BIM (Niveau 0-1) -->
+                                    <div class="pack-card bg-as2-dark p-4 rounded-xl border-t-4 border-gray-400">
+                                        <h4 class="text-xl font-extrabold text-gray-300 mb-2">Pack N°1: Immersion BIM</h4>
+                                        <p class="text-sm font-semibold text-gray-500 mb-4">Rôle: Acteur BIM / Lecteur | Niveau 0-1</p>
+                                        <ul class="text-sm text-gray-400 space-y-1 mb-4 list-disc pl-5">
+                                            <li>Fondamentaux BIM</li>
+                                            <li>Lecture de Maquette</li>
+                                        </ul>
+                                        <p class="text-xs text-right font-bold text-green-400">TOTAL: 21 heures</p>
+                                        <div class="mt-4 pt-3 border-t border-gray-700 flex justify-between items-center">
+                                            <span class="text-xl font-bold text-as2-blue">58 500 DZD</span> <!-- (40k + 25k) * 0.9 = 58 500 -->
+                                            <button class="bg-gray-700 text-white text-xs px-3 py-1 rounded hover:bg-as2-blue transition-colors">Choisir ce Pack</button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Pack 2: Spécialiste & Production (Niveau 1-2) -->
+                                    <div class="pack-card bg-as2-dark p-4 rounded-xl border-t-4 border-yellow-400">
+                                        <h4 class="text-xl font-extrabold text-yellow-400 mb-2">Pack N°2: Spécialiste & Production</h4>
+                                        <p class="text-sm font-semibold text-gray-500 mb-4">Rôle: BIM Modeleur / Spécialiste | Niveau 1-2</p>
+                                        <ul class="text-sm text-gray-400 space-y-1 mb-4 list-disc pl-5">
+                                            <li>Fondamentaux BIM (Rappel)</li>
+                                            <li>Spécialiste Revit (40h)</li>
+                                            <li>BIM 5D (Quantités)</li>
+                                        </ul>
+                                        <p class="text-xs text-right font-bold text-green-400">TOTAL: 78 heures (Exemple)</p>
+                                        <div class="mt-4 pt-3 border-t border-gray-700 flex justify-between items-center">
+                                            <span class="text-xl font-bold text-as2-blue">174 250 DZD</span> <!-- (40k + 90k + 65k) * 0.85 = 174 250 -->
+                                            <button class="bg-yellow-600 text-white text-xs px-3 py-1 rounded hover:bg-yellow-700 transition-colors">Choisir ce Pack</button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Pack 3: Stratège & Gestion de Projet (Niveau 2-3) -->
+                                    <div class="pack-card bg-as2-dark p-4 rounded-xl border-t-4 border-red-500">
+                                        <h4 class="text-xl font-extrabold text-red-400 mb-2">Pack N°3: Stratège & Gestion de Projet</h4>
+                                        <p class="text-sm font-semibold text-gray-500 mb-4">Rôle: BIM Coordinateur / Manager | Niveau 2-3</p>
+                                        <ul class="text-sm text-gray-400 space-y-1 mb-4 list-disc pl-5">
+                                            <li>BIM Manager Stratégique (40h)</li>
+                                            <li>BIM Coordinateur (Synthèse) (28h)</li>
+                                            <li>Expert CDE Manager (28h)</li>
+                                        </ul>
+                                        <p class="text-xs text-right font-bold text-green-400">TOTAL: 96 heures</p>
+                                        <div class="mt-4 pt-3 border-t border-gray-700 flex justify-between items-center">
+                                            <span class="text-xl font-bold text-as2-blue">228 000 DZD</span> <!-- (120k + 80k + 85k) * 0.80 = 228 000 -->
+                                            <button class="bg-red-600 text-white text-xs px-3 py-1 rounded hover:bg-red-700 transition-colors">Choisir ce Pack</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <h4 class="text-xl font-bold text-white mb-4 border-t border-gray-700 pt-4">2. Modules de Spécialisation à la Carte</h4>
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-gray-700">
+                                        <thead class="bg-as2-dark">
+                                            <tr>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Module</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider hidden sm:table-cell">Objectif</th>
+                                                <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">Durée (h)</th>
+                                                <th class="px-6 py-3 text-right text-xs font-medium text-white uppercase tracking-wider">Prix (DZD)</th>
+                                                <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-gray-800 text-sm text-gray-400">
+                                            <!-- Fondamentaux du BIM -->
+                                            <tr class="module-table-row">
+                                                <td class="px-6 py-4 font-semibold text-white">Fondamentaux du BIM</td>
+                                                <td class="px-6 py-4 hidden sm:table-cell">Comprendre les concepts, le vocabulaire (LOD, IFC) et les enjeux du BIM.</td>
+                                                <td class="px-6 py-4 text-center text-yellow-400">14</td>
+                                                <td class="px-6 py-4 text-right text-as2-blue">40 000</td>
+                                                <td class="px-6 py-4 text-center"><button class="bg-as2-blue text-white text-xs px-2 py-1 rounded hover:bg-as2-blue-dark">Ajouter</button></td>
+                                            </tr>
+                                            <!-- Lecture de Maquette Numérique -->
+                                            <tr class="module-table-row">
+                                                <td class="px-6 py-4 font-semibold text-white">Lecture de Maquette Numérique</td>
+                                                <td class="px-6 py-4 hidden sm:table-cell">Savoir utiliser une visionneuse pour naviguer et extraire des informations d'un modèle (IFC).</td>
+                                                <td class="px-6 py-4 text-center text-yellow-400">7</td>
+                                                <td class="px-6 py-4 text-right text-as2-blue">25 000</td>
+                                                <td class="px-6 py-4 text-center"><button class="bg-as2-blue text-white text-xs px-2 py-1 rounded hover:bg-as2-blue-dark">Ajouter</button></td>
+                                            </tr>
+                                             <!-- Spécialiste Revit (Architecture) -->
+                                            <tr class="module-table-row">
+                                                <td class="px-6 py-4 font-semibold text-white">Spécialiste Revit (Archi)</td>
+                                                <td class="px-6 py-4 hidden sm:table-cell">Maîtriser la modélisation architecturale complète sur Revit.</td>
+                                                <td class="px-6 py-4 text-center text-yellow-400">40</td>
+                                                <td class="px-6 py-4 text-right text-as2-blue">90 000</td>
+                                                <td class="px-6 py-4 text-center"><button class="bg-as2-blue text-white text-xs px-2 py-1 rounded hover:bg-as2-blue-dark">Ajouter</button></td>
+                                            </tr>
+                                            <!-- Spécialiste Revit (Structure) -->
+                                            <tr class="module-table-row">
+                                                <td class="px-6 py-4 font-semibold text-white">Spécialiste Revit (Structure)</td>
+                                                <td class="px-6 py-4 hidden sm:table-cell">Maîtriser la modélisation des éléments porteurs et documentation.</td>
+                                                <td class="px-6 py-4 text-center text-yellow-400">40</td>
+                                                <td class="px-6 py-4 text-right text-as2-blue">90 000</td>
+                                                <td class="px-6 py-4 text-center"><button class="bg-as2-blue text-white text-xs px-2 py-1 rounded hover:bg-as2-blue-dark">Ajouter</button></td>
+                                            </tr>
+                                            <!-- Spécialiste Revit (MEP/Fluides) -->
+                                            <tr class="module-table-row">
+                                                <td class="px-6 py-4 font-semibold text-white">Spécialiste Revit (MEP/Fluides)</td>
+                                                <td class="px-6 py-4 hidden sm:table-cell">Maîtriser la modélisation et la documentation des réseaux (CVC, plomberie, électricité).</td>
+                                                <td class="px-6 py-4 text-center text-yellow-400">40</td>
+                                                <td class="px-6 py-4 text-right text-as2-blue">90 000</td>
+                                                <td class="px-6 py-4 text-center"><button class="bg-as2-blue text-white text-xs px-2 py-1 rounded hover:bg-as2-blue-dark">Ajouter</button></td>
+                                            </tr>
+                                            <!-- BIM Coordinateur (Synthèse) -->
+                                            <tr class="module-table-row">
+                                                <td class="px-6 py-4 font-semibold text-white">BIM Coordinateur (Synthèse)</td>
+                                                <td class="px-6 py-4 hidden sm:table-cell">Compiler les modèles, détecter les collisions et gérer les rapports (Navisworks/Solibri).</td>
+                                                <td class="px-6 py-4 text-center text-yellow-400">28</td>
+                                                <td class="px-6 py-4 text-right text-as2-blue">80 000</td>
+                                                <td class="px-6 py-4 text-center"><button class="bg-as2-blue text-white text-xs px-2 py-1 rounded hover:bg-as2-blue-dark">Ajouter</button></td>
+                                            </tr>
+                                            <!-- Expert CDE Manager -->
+                                            <tr class="module-table-row">
+                                                <td class="px-6 py-4 font-semibold text-white">Expert CDE Manager</td>
+                                                <td class="px-6 py-4 hidden sm:table-cell">Administrer l'Environnement Commun de Données (ACDat) et ses flux (ISO 19650).</td>
+                                                <td class="px-6 py-4 text-center text-yellow-400">28</td>
+                                                <td class="px-6 py-4 text-right text-as2-blue">85 000</td>
+                                                <td class="px-6 py-4 text-center"><button class="bg-as2-blue text-white text-xs px-2 py-1 rounded hover:bg-as2-blue-dark">Ajouter</button></td>
+                                            </tr>
+                                            <!-- BIM 4D (Planification) -->
+                                            <tr class="module-table-row">
+                                                <td class="px-6 py-4 font-semibold text-white">BIM 4D (Planification)</td>
+                                                <td class="px-6 py-4 hidden sm:table-cell">Lier le modèle 3D au planning pour la simulation de chantier.</td>
+                                                <td class="px-6 py-4 text-center text-yellow-400">21</td>
+                                                <td class="px-6 py-4 text-right text-as2-blue">65 000</td>
+                                                <td class="px-6 py-4 text-center"><button class="bg-as2-blue text-white text-xs px-2 py-1 rounded hover:bg-as2-blue-dark">Ajouter</button></td>
+                                            </tr>
+                                            <!-- BIM 5D (Quantités & Coûts) -->
+                                            <tr class="module-table-row">
+                                                <td class="px-6 py-4 font-semibold text-white">BIM 5D (Quantités & Coûts)</td>
+                                                <td class="px-6 py-4 hidden sm:table-cell">Extraction de métrés précis et liaison aux bases de prix.</td>
+                                                <td class="px-6 py-4 text-center text-yellow-400">21</td>
+                                                <td class="px-6 py-4 text-right text-as2-blue">65 000</td>
+                                                <td class="px-6 py-4 text-center"><button class="bg-as2-blue text-white text-xs px-2 py-1 rounded hover:bg-as2-blue-dark">Ajouter</button></td>
+                                            </tr>
+                                             <!-- BIM Manager Stratégique -->
+                                            <tr class="module-table-row">
+                                                <td class="px-6 py-4 font-semibold text-white">BIM Manager Stratégique</td>
+                                                <td class="px-6 py-4 hidden sm:table-cell">Définir la stratégie BIM, rédiger le CdBIM et gérer les protocoles du projet.</td>
+                                                <td class="px-6 py-4 text-center text-yellow-400">40</td>
+                                                <td class="px-6 py-4 text-right text-as2-blue">120 000</td>
+                                                <td class="px-6 py-4 text-center"><button class="bg-as2-blue text-white text-xs px-2 py-1 rounded hover:bg-as2-blue-dark">Ajouter</button></td>
+                                            </tr>
+                                             <!-- Scan-to-BIM -->
+                                            <tr class="module-table-row">
+                                                <td class="px-6 py-4 font-semibold text-white">Scan-to-BIM</td>
+                                                <td class="px-6 py-4 hidden sm:table-cell">Comprendre l'acquisition de nuages de points et la modélisation de l'existant.</td>
+                                                <td class="px-6 py-4 text-center text-yellow-400">14</td>
+                                                <td class="px-6 py-4 text-right text-as2-blue">50 000</td>
+                                                <td class="px-6 py-4 text-center"><button class="bg-as2-blue text-white text-xs px-2 py-1 rounded hover:bg-as2-blue-dark">Ajouter</button></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <h4 class="text-xl font-bold text-as2-blue mt-10 mb-4 border-t border-gray-700 pt-4">3. Autres Services (Consulting)</h4>
+                                <ul class="space-y-2 text-gray-400 text-sm">
+                                    <li class="flex justify-between items-center bg-as2-dark p-3 rounded"><span class="font-semibold text-white">Audit de Modèles (Consulting)</span> <span class="text-xs text-gray-500">Service Client Final</span></li>
+                                    <li class="flex justify-between items-center bg-as2-dark p-3 rounded"><span class="font-semibold text-white">Coaching Personnalisé BIM Manager</span> <span class="text-xs text-gray-500">Accompagnement Niveau 3</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button onclick="showScreen('home')" class="mt-8 text-as2-blue hover:text-white transition-colors flex items-center">
+                <i data-lucide="log-out" class="w-5 h-5 mr-2"></i> Déconnexion
+            </button>
+        </div>
+
+        <!-- Écran Tableau de Bord Expert BIM (Contenu inchangé) -->
+        <div id="screen-dashboard-expert" class="page-screen">
+            <h1 class="text-4xl font-extrabold text-white mb-6 border-b pb-4 border-gray-700">Espace Expert BIM</h1>
+            <!-- Mise à jour du message de bienvenue -->
+            <p class="text-lg text-gray-300 mb-10">Bienvenue, <span id="welcome-expert" class="font-bold text-as2-blue"></span>. Gérez votre carrière et vos missions.</p>
+
+            <div class="bg-as2-dark-light rounded-xl shadow-2xl">
+                <!-- Tabs Navigation -->
+                <div class="flex border-b border-gray-700">
+                    <button class="tab-button active" onclick="showPrivateScreen('expert', 'dashboard')">
+                        <i data-lucide="layout-dashboard" class="w-5 h-5 inline mr-2"></i> Tableau de Bord Expert
+                    </button>
+                    <button class="tab-button" onclick="showPrivateScreen('expert', 'projects')">
+                        <i data-lucide="folder-open" class="w-5 h-5 inline mr-2"></i> Mes Projets
+                    </button>
+                    <button class="tab-button" onclick="showPrivateScreen('expert', 'formations')">
+                        <i data-lucide="graduation-cap" class="w-5 h-5 inline mr-2"></i> Mes Formations
+                    </button>
+                    <!-- Texte de l'onglet mis à jour -->
+                    <button class="tab-button" onclick="showPrivateScreen('expert', 'cv')">
+                        <i data-lucide="file-text" class="w-5 h-5 inline mr-2"></i> Déposer / Mettre à Jour mon CV
+                    </button>
+                </div>
+
+                <!-- Tabs Content -->
+                <div class="p-8">
+                    <div id="content-expert-dashboard" class="tab-content active">
+                        <h2 class="text-2xl font-bold text-as2-blue mb-4">Synthèse de votre Profil et Calendrier</h2>
+                        <div class="grid md:grid-cols-3 gap-6">
+                            <div class="p-5 bg-as2-dark rounded-lg shadow-lg border border-gray-700">
+                                <p class="text-sm text-gray-400">Niveau de Certification</p>
+                                <p class="text-4xl font-extrabold text-yellow-400">BIM Coordinator</p>
+                            </div>
+                            <div class="p-5 bg-as2-dark rounded-lg shadow-lg border border-gray-700">
+                                <p class="text-sm text-gray-400">Missions Terminées</p>
+                                <p class="text-4xl font-extrabold text-white">04</p>
+                            </div>
+                            <div class="p-5 bg-as2-dark rounded-lg shadow-lg border border-gray-700">
+                                <p class="text-sm text-gray-400">Prochaine Échéance</p>
+                                <p class="text-4xl font-extrabold text-green-400">10 Jours</p>
+                            </div>
+                        </div>
+                        
+                         <!-- Calendrier d'Activités (Expert) -->
+                        <div class="mt-8 p-6 bg-as2-dark rounded-lg shadow-lg border border-gray-700">
+                            <h3 class="text-xl font-bold text-white mb-4 flex items-center">
+                                <i data-lucide="calendar" class="w-5 h-5 mr-3 text-as2-blue"></i> Calendrier des Événements (Novembre 2025)
+                            </h3>
+                            <div class="calendar-grid">
+                                <div class="calendar-header-day">Lun</div>
+                                <div class="calendar-header-day">Mar</div>
+                                <div class="calendar-header-day">Mer</div>
+                                <div class="calendar-header-day">Jeu</div>
+                                <div class="calendar-header-day">Ven</div>
+                                <div class="calendar-header-day">Sam</div>
+                                <div class="calendar-header-day">Dim</div>
+                                <!-- Jours vides (Octobre) -->
+                                <div class="calendar-day-box text-gray-600">27</div>
+                                <div class="calendar-day-box text-gray-600">28</div>
+                                <div class="calendar-day-box text-gray-600">29</div>
+                                <div class="calendar-day-box text-gray-600">30</div>
+                                <div class="calendar-day-box text-gray-600">31</div>
+                                <!-- Jours de Novembre -->
+                                <div class="calendar-day-box event" title="Début de la formation: BIM Manager">1 <div class="event-dot"></div></div>
+                                <div class="calendar-day-box">2</div>
+                                <div class="calendar-day-box">3</div>
+                                <div class="calendar-day-box">4</div>
+                                <div class="calendar-day-box">5</div>
+                                <div class="calendar-day-box">6</div>
+                                <div class="calendar-day-box">7</div>
+                                <div class="calendar-day-box">8</div>
+                                <div class="calendar-day-box">9</div>
+                                <div class="calendar-day-box current-day event" title="Point de Coordination Mission A">10 <div class="event-dot"></div></div>
+                                <div class="calendar-day-box">11</div>
+                                <div class="calendar-day-box">12</div>
+                                <div class="calendar-day-box">13</div>
+                                <div class="calendar-day-box">14</div>
+                                <div class="calendar-day-box event" title="Rendu du rapport de Mission B">15 <div class="event-dot"></div></div>
+                                <div class="calendar-day-box">16</div>
+                                <div class="calendar-day-box">17</div>
+                                <div class="calendar-day-box">18</div>
+                                <div class="calendar-day-box">19</div>
+                                <div class="calendar-day-box">20</div>
+                                <div class="calendar-day-box">21</div>
+                                <div class="calendar-day-box">22</div>
+                                <div class="calendar-day-box">23</div>
+                                <div class="calendar-day-box">24</div>
+                                <div class="calendar-day-box">25</div>
+                                <div class="calendar-day-box">26</div>
+                                <div class="calendar-day-box">27</div>
+                                <div class="calendar-day-box">28</div>
+                                <div class="calendar-day-box">29</div>
+                                <div class="calendar-day-box">30</div>
+                                <!-- Jours vides (Décembre) -->
+                                <div class="calendar-day-box text-gray-600">1</div>
+                                <div class="calendar-day-box text-gray-600">2</div>
+                            </div>
+                            <p class="text-xs text-gray-500 italic mt-4">Cliquez sur un jour avec un point bleu pour voir le détail de l'événement.</p>
+                        </div>
+                        <p class="text-gray-500 italic mt-6">Mettez à jour votre CV et consultez les offres de missions dans les onglets dédiés.</p>
+                    </div>
+
+                    <div id="content-expert-projects" class="tab-content">
+                        <h2 class="text-2xl font-bold text-as2-blue mb-4">Mes Missions en Cours et Passées</h2>
+                         <p class="text-sm text-gray-400 mb-6">Filtrez les missions ci-dessous ou cliquez sur une mission pour accéder à l'environnement de collaboration (Simulation ACC).</p>
+                         
+                         <!-- Filtre de Projet -->
+                        <div class="mb-6">
+                            <input type="text" id="filter-expert-projects" placeholder="Filtrer les missions par nom, statut ou entreprise..." onkeyup="filterProjects('expert')" class="w-full px-4 py-2 rounded-lg bg-as2-dark border border-gray-700 focus:border-as2-blue focus:ring-as2-blue text-white">
+                        </div>
+                         
+                         <!-- Liste des projets réorganisée -->
+                         <div class="space-y-6" id="list-expert-projects">
+                            <!-- Section Projets en Cours -->
+                            <div>
+                                <h3 class="text-xl font-semibold text-white mb-3 flex items-center">
+                                    <i data-lucide="loader" class="w-5 h-5 mr-3 text-yellow-400 animate-spin"></i> Missions en Cours
+                                </h3>
+                                <div class="space-y-4">
+                                    <a href="#" onclick="simulateACC('Projet 01: Tour Résidentielle (Mission A)')" data-search="projet 01 tour résidentielle mission a en cours coordination structurelle" class="project-link">
+                                        <strong class="font-semibold">Projet 01: Tour Résidentielle (Mission A)</strong> - Coordination Structurelle.
+                                        <i data-lucide="monitor" class="w-4 h-4 inline ml-2 text-white"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <!-- Section Projets Conclus -->
+                            <div>
+                                <h3 class="text-xl font-semibold text-white mb-3 flex items-center">
+                                    <i data-lucide="check-circle" class="w-5 h-5 mr-3 text-green-400"></i> Missions Conclues
+                                </h3>
+                                <div class="space-y-4">
+                                     <a href="#" onclick="simulateACC('Projet 02: Groupe X (Mission B)')" data-search="projet 02 groupe x mission b terminée audit de modélisation conclu" class="project-link concluded">
+                                        <strong class="font-semibold">Projet 02: Groupe X (Mission B)</strong> - Audit de Modélisation (Conclue)
+                                        <i data-lucide="monitor" class="w-4 h-4 inline ml-2"></i>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Section Offres -->
+                            <div>
+                                <h3 class="text-xl font-semibold text-white mb-3 flex items-center">
+                                    <i data-lucide="file-text" class="w-5 h-5 mr-3 text-yellow-400"></i> Nouvelles Offres
+                                </h3>
+                                <div class="space-y-4">
+                                    <a href="#" onclick="showMessage('Simulation: Voir l\'offre pour l\'Hôtel 5 étoiles', 'calendar')" data-search="projet 03 hôtel 5 étoiles offre nouvelle" class="project-link offer">
+                                        <strong class="font-semibold">Projet 03: Hôtel 5 Étoiles</strong> - Recherche BIM Manager (Phase DCE)
+                                        <i data-lucide="file-text" class="w-4 h-4 inline ml-2"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="content-expert-formations" class="tab-content">
+                        <h2 class="text-2xl font-bold text-as2-blue mb-4">Mes Formations</h2>
+                        
+                        <div class="space-y-6">
+                            <!-- Section Formation en Cours -->
+                            <div class="p-4 bg-as2-dark rounded-lg border border-yellow-600/50">
+                                <h3 class="text-xl font-semibold text-yellow-400 mb-3 flex items-center">
+                                    <i data-lucide="loader" class="w-5 h-5 mr-3 animate-spin"></i> Formations en Cours
+                                </h3>
+                                <ul class="space-y-2 text-gray-400">
+                                    <li class="flex items-center"><i data-lucide="arrow-right" class="w-4 h-4 mr-2 text-yellow-400"></i> BIM Manager Certification (Début 1er Décembre 2025)</li>
+                                </ul>
+                                <p class="text-xs text-gray-500 mt-2">Fin estimée: Fin Février 2026</p>
+                            </div>
+                            
+                            <!-- Section Formation Complétées -->
+                            <div class="p-4 bg-as2-dark rounded-lg border border-green-600/50">
+                                <h3 class="text-xl font-semibold text-green-400 mb-3 flex items-center">
+                                    <i data-lucide="check-circle" class="w-5 h-5 mr-3"></i> Formations Complétées
+                                </h3>
+                                <ul class="space-y-2 text-gray-400">
+                                    <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 mr-2 text-green-400"></i> BIM Coordinator Certifié (Juillet 2024)</li>
+                                </ul>
+                            </div>
+                            
+                            <!-- Section Ajouter une Formation / Catalogue de Packs -->
+                            <div class="p-4 bg-as2-dark-light rounded-lg border border-as2-blue/50">
+                                <h3 class="text-2xl font-bold text-as2-blue mb-6 flex items-center">
+                                    <i data-lucide="plus-circle" class="w-6 h-6 mr-3"></i> Catalogue de Formations
+                                </h3>
+                                
+                                <h4 class="text-xl font-bold text-white mb-4">1. Packs de Certification (Tarif Avantageux)</h4>
+
+                                <div class="grid md:grid-cols-3 gap-6 mb-10">
+                                    
+                                    <!-- Pack 1: Immersion BIM (Niveau 0-1) -->
+                                    <div class="pack-card bg-as2-dark p-4 rounded-xl border-t-4 border-gray-400">
+                                        <h4 class="text-xl font-extrabold text-gray-300 mb-2">Pack N°1: Immersion BIM</h4>
+                                        <p class="text-sm font-semibold text-gray-500 mb-4">Rôle: Acteur BIM / Lecteur | Niveau 0-1</p>
+                                        <ul class="text-sm text-gray-400 space-y-1 mb-4 list-disc pl-5">
+                                            <li>Fondamentaux BIM</li>
+                                            <li>Lecture de Maquette</li>
+                                        </ul>
+                                        <p class="text-xs text-right font-bold text-green-400">TOTAL: 21 heures</p>
+                                        <div class="mt-4 pt-3 border-t border-gray-700 flex justify-between items-center">
+                                            <span class="text-xl font-bold text-as2-blue">58 500 DZD</span> <!-- (40k + 25k) * 0.9 = 58 500 -->
+                                            <button class="bg-gray-700 text-white text-xs px-3 py-1 rounded hover:bg-as2-blue transition-colors">Choisir ce Pack</button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Pack 2: Spécialiste & Production (Niveau 1-2) -->
+                                    <div class="pack-card bg-as2-dark p-4 rounded-xl border-t-4 border-yellow-400">
+                                        <h4 class="text-xl font-extrabold text-yellow-400 mb-2">Pack N°2: Spécialiste & Production</h4>
+                                        <p class="text-sm font-semibold text-gray-500 mb-4">Rôle: BIM Modeleur / Spécialiste | Niveau 1-2</p>
+                                        <ul class="text-sm text-gray-400 space-y-1 mb-4 list-disc pl-5">
+                                            <li>Fondamentaux BIM (Rappel)</li>
+                                            <li>Spécialiste Revit (40h)</li>
+                                            <li>BIM 5D (Quantités)</li>
+                                        </ul>
+                                        <p class="text-xs text-right font-bold text-green-400">TOTAL: 78 heures (Exemple)</p>
+                                        <div class="mt-4 pt-3 border-t border-gray-700 flex justify-between items-center">
+                                            <span class="text-xl font-bold text-as2-blue">174 250 DZD</span> <!-- (40k + 90k + 65k) * 0.85 = 174 250 -->
+                                            <button class="bg-yellow-600 text-white text-xs px-3 py-1 rounded hover:bg-yellow-700 transition-colors">Choisir ce Pack</button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Pack 3: Stratège & Gestion de Projet (Niveau 2-3) -->
+                                    <div class="pack-card bg-as2-dark p-4 rounded-xl border-t-4 border-red-500">
+                                        <h4 class="text-xl font-extrabold text-red-400 mb-2">Pack N°3: Stratège & Gestion de Projet</h4>
+                                        <p class="text-sm font-semibold text-gray-500 mb-4">Rôle: BIM Coordinateur / Manager | Niveau 2-3</p>
+                                        <ul class="text-sm text-gray-400 space-y-1 mb-4 list-disc pl-5">
+                                            <li>BIM Manager Stratégique (40h)</li>
+                                            <li>BIM Coordinateur (Synthèse) (28h)</li>
+                                            <li>Expert CDE Manager (28h)</li>
+                                        </ul>
+                                        <p class="text-xs text-right font-bold text-green-400">TOTAL: 96 heures</p>
+                                        <div class="mt-4 pt-3 border-t border-gray-700 flex justify-between items-center">
+                                            <span class="text-xl font-bold text-as2-blue">228 000 DZD</span> <!-- (120k + 80k + 85k) * 0.80 = 228 000 -->
+                                            <button class="bg-red-600 text-white text-xs px-3 py-1 rounded hover:bg-red-700 transition-colors">Choisir ce Pack</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <h4 class="text-xl font-bold text-white mb-4 border-t border-gray-700 pt-4">2. Modules de Spécialisation à la Carte</h4>
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-gray-700">
+                                        <thead class="bg-as2-dark">
+                                            <tr>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Module</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider hidden sm:table-cell">Objectif</th>
+                                                <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">Durée (h)</th>
+                                                <th class="px-6 py-3 text-right text-xs font-medium text-white uppercase tracking-wider">Prix (DZD)</th>
+                                                <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-gray-800 text-sm text-gray-400">
+                                            <!-- Fondamentaux du BIM -->
+                                            <tr class="module-table-row">
+                                                <td class="px-6 py-4 font-semibold text-white">Fondamentaux du BIM</td>
+                                                <td class="px-6 py-4 hidden sm:table-cell">Comprendre les concepts, le vocabulaire (LOD, IFC) et les enjeux du BIM.</td>
+                                                <td class="px-6 py-4 text-center text-yellow-400">14</td>
+                                                <td class="px-6 py-4 text-right text-as2-blue">40 000</td>
+                                                <td class="px-6 py-4 text-center"><button class="bg-as2-blue text-white text-xs px-2 py-1 rounded hover:bg-as2-blue-dark">Ajouter</button></td>
+                                            </tr>
+                                            <!-- Lecture de Maquette Numérique -->
+                                            <tr class="module-table-row">
+                                                <td class="px-6 py-4 font-semibold text-white">Lecture de Maquette Numérique</td>
+                                                <td class="px-6 py-4 hidden sm:table-cell">Savoir utiliser une visionneuse pour naviguer et extraire des informations d'un modèle (IFC).</td>
+                                                <td class="px-6 py-4 text-center text-yellow-400">7</td>
+                                                <td class="px-6 py-4 text-right text-as2-blue">25 000</td>
+                                                <td class="px-6 py-4 text-center"><button class="bg-as2-blue text-white text-xs px-2 py-1 rounded hover:bg-as2-blue-dark">Ajouter</button></td>
+                                            </tr>
+                                             <!-- Spécialiste Revit (Architecture) -->
+                                            <tr class="module-table-row">
+                                                <td class="px-6 py-4 font-semibold text-white">Spécialiste Revit (Archi)</td>
+                                                <td class="px-6 py-4 hidden sm:table-cell">Maîtriser la modélisation architecturale complète sur Revit.</td>
+                                                <td class="px-6 py-4 text-center text-yellow-400">40</td>
+                                                <td class="px-6 py-4 text-right text-as2-blue">90 000</td>
+                                                <td class="px-6 py-4 text-center"><button class="bg-as2-blue text-white text-xs px-2 py-1 rounded hover:bg-as2-blue-dark">Ajouter</button></td>
+                                            </tr>
+                                            <!-- Spécialiste Revit (Structure) -->
+                                            <tr class="module-table-row">
+                                                <td class="px-6 py-4 font-semibold text-white">Spécialiste Revit (Structure)</td>
+                                                <td class="px-6 py-4 hidden sm:table-cell">Maîtriser la modélisation des éléments porteurs et documentation.</td>
+                                                <td class="px-6 py-4 text-center text-yellow-400">40</td>
+                                                <td class="px-6 py-4 text-right text-as2-blue">90 000</td>
+                                                <td class="px-6 py-4 text-center"><button class="bg-as2-blue text-white text-xs px-2 py-1 rounded hover:bg-as2-blue-dark">Ajouter</button></td>
+                                            </tr>
+                                            <!-- Spécialiste Revit (MEP/Fluides) -->
+                                            <tr class="module-table-row">
+                                                <td class="px-6 py-4 font-semibold text-white">Spécialiste Revit (MEP/Fluides)</td>
+                                                <td class="px-6 py-4 hidden sm:table-cell">Maîtriser la modélisation et la documentation des réseaux (CVC, plomberie, électricité).</td>
+                                                <td class="px-6 py-4 text-center text-yellow-400">40</td>
+                                                <td class="px-6 py-4 text-right text-as2-blue">90 000</td>
+                                                <td class="px-6 py-4 text-center"><button class="bg-as2-blue text-white text-xs px-2 py-1 rounded hover:bg-as2-blue-dark">Ajouter</button></td>
+                                            </tr>
+                                            <!-- BIM Coordinateur (Synthèse) -->
+                                            <tr class="module-table-row">
+                                                <td class="px-6 py-4 font-semibold text-white">BIM Coordinateur (Synthèse)</td>
+                                                <td class="px-6 py-4 hidden sm:table-cell">Compiler les modèles, détecter les collisions et gérer les rapports (Navisworks/Solibri).</td>
+                                                <td class="px-6 py-4 text-center text-yellow-400">28</td>
+                                                <td class="px-6 py-4 text-right text-as2-blue">80 000</td>
+                                                <td class="px-6 py-4 text-center"><button class="bg-as2-blue text-white text-xs px-2 py-1 rounded hover:bg-as2-blue-dark">Ajouter</button></td>
+                                            </tr>
+                                            <!-- Expert CDE Manager -->
+                                            <tr class="module-table-row">
+                                                <td class="px-6 py-4 font-semibold text-white">Expert CDE Manager</td>
+                                                <td class="px-6 py-4 hidden sm:table-cell">Administrer l'Environnement Commun de Données (ACDat) et ses flux (ISO 19650).</td>
+                                                <td class="px-6 py-4 text-center text-yellow-400">28</td>
+                                                <td class="px-6 py-4 text-right text-as2-blue">85 000</td>
+                                                <td class="px-6 py-4 text-center"><button class="bg-as2-blue text-white text-xs px-2 py-1 rounded hover:bg-as2-blue-dark">Ajouter</button></td>
+                                            </tr>
+                                            <!-- BIM 4D (Planification) -->
+                                            <tr class="module-table-row">
+                                                <td class="px-6 py-4 font-semibold text-white">BIM 4D (Planification)</td>
+                                                <td class="px-6 py-4 hidden sm:table-cell">Lier le modèle 3D au planning pour la simulation de chantier.</td>
+                                                <td class="px-6 py-4 text-center text-yellow-400">21</td>
+                                                <td class="px-6 py-4 text-right text-as2-blue">65 000</td>
+                                                <td class="px-6 py-4 text-center"><button class="bg-as2-blue text-white text-xs px-2 py-1 rounded hover:bg-as2-blue-dark">Ajouter</button></td>
+                                            </tr>
+                                            <!-- BIM 5D (Quantités & Coûts) -->
+                                            <tr class="module-table-row">
+                                                <td class="px-6 py-4 font-semibold text-white">BIM 5D (Quantités & Coûts)</td>
+                                                <td class="px-6 py-4 hidden sm:table-cell">Extraction de métrés précis et liaison aux bases de prix.</td>
+                                                <td class="px-6 py-4 text-center text-yellow-400">21</td>
+                                                <td class="px-6 py-4 text-right text-as2-blue">65 000</td>
+                                                <td class="px-6 py-4 text-center"><button class="bg-as2-blue text-white text-xs px-2 py-1 rounded hover:bg-as2-blue-dark">Ajouter</button></td>
+                                            </tr>
+                                             <!-- BIM Manager Stratégique -->
+                                            <tr class="module-table-row">
+                                                <td class="px-6 py-4 font-semibold text-white">BIM Manager Stratégique</td>
+                                                <td class="px-6 py-4 hidden sm:table-cell">Définir la stratégie BIM, rédiger le CdBIM et gérer les protocoles du projet.</td>
+                                                <td class="px-6 py-4 text-center text-yellow-400">40</td>
+                                                <td class="px-6 py-4 text-right text-as2-blue">120 000</td>
+                                                <td class="px-6 py-4 text-center"><button class="bg-as2-blue text-white text-xs px-2 py-1 rounded hover:bg-as2-blue-dark">Ajouter</button></td>
+                                            </tr>
+                                             <!-- Scan-to-BIM -->
+                                            <tr class="module-table-row">
+                                                <td class="px-6 py-4 font-semibold text-white">Scan-to-BIM</td>
+                                                <td class="px-6 py-4 hidden sm:table-cell">Comprendre l'acquisition de nuages de points et la modélisation de l'existant.</td>
+                                                <td class="px-6 py-4 text-center text-yellow-400">14</td>
+                                                <td class="px-6 py-4 text-right text-as2-blue">50 000</td>
+                                                <td class="px-6 py-4 text-center"><button class="bg-as2-blue text-white text-xs px-2 py-1 rounded hover:bg-as2-blue-dark">Ajouter</button></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <h4 class="text-xl font-bold text-as2-blue mt-10 mb-4 border-t border-gray-700 pt-4">3. Autres Services (Consulting)</h4>
+                                <ul class="space-y-2 text-gray-400 text-sm">
+                                    <li class="flex justify-between items-center bg-as2-dark p-3 rounded"><span class="font-semibold text-white">Audit de Modèles (Consulting)</span> <span class="text-xs text-gray-500">Service Client Final</span></li>
+                                    <li class="flex justify-between items-center bg-as2-dark p-3 rounded"><span class="font-semibold text-white">Coaching Personnalisé BIM Manager</span> <span class="text-xs text-gray-500">Accompagnement Niveau 3</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button onclick="showScreen('home')" class="mt-8 text-as2-blue hover:text-white transition-colors flex items-center">
+                <i data-lucide="log-out" class="w-5 h-5 mr-2"></i> Déconnexion
+            </button>
+        </div>
+
+    </main>
+    
+    <!-- NOUVEL ÉCRAN : SIMULATION AUTODESK CONSTRUCTION CLOUD (ACC) -->
+    <div id="screen-acc-simulation" class="page-screen">
+        <!-- En-tête de la simulation ACC (Remplacement de la barre de navigation AS2Built pour cette vue) -->
+        <div class="fixed top-0 left-0 w-full bg-white border-b border-gray-300 z-50 shadow-md h-16 flex items-center px-4">
+            <!-- Logo ACC Simulé -->
+            <span class="text-lg font-bold text-gray-700">AUTODESK Construction Cloud</span>
+            <div class="ml-8 flex items-center space-x-2 text-sm">
+                <i data-lucide="home" class="w-4 h-4 text-gray-500"></i>
+                <span class="text-gray-500">Build</span>
+            </div>
+            <span class="ml-auto text-sm text-gray-500 mr-4" onclick="showDashboardReturn()">
+                <!-- Texte mis à jour: Quitter le projet -->
+                <a href="#" onclick="showDashboardReturn()" class="text-as2-blue hover:underline">
+                    <i data-lucide="x" class="w-4 h-4 inline mr-1"></i> Quitter le projet
+                </a>
+            </span>
+        </div>
+
+        <div class="acc-container">
+            <!-- Sidebar ACC Simulé (TRADUCTION) -->
+            <div class="acc-sidebar">
+                <a href="#" class="acc-sidebar-link active">
+                    <i data-lucide="home" class="w-5 h-5 mr-3"></i> Accueil
+                </a>
+                <div class="acc-sidebar-title">Documents</div>
+                <a href="#" class="acc-sidebar-link">
+                    <i data-lucide="layers" class="w-5 h-5 mr-3"></i> Élaborés
+                </a>
+                <a href="#" class="acc-sidebar-link">
+                    <i data-lucide="file" class="w-5 h-5 mr-3"></i> Fichiers
+                </a>
+                <a href="#" class="acc-sidebar-link">
+                    <i data-lucide="clipboard-list" class="w-5 h-5 mr-3"></i> Spécifications
+                </a>
+                <div class="acc-sidebar-title">Gestion de projet</div>
+                 <a href="#" class="acc-sidebar-link">
+                    <i data-lucide="activity" class="w-5 h-5 mr-3"></i> Activités
+                </a>
+                <a href="#" class="acc-sidebar-link">
+                    <i data-lucide="blocks" class="w-5 h-5 mr-3"></i> Modules
+                </a>
+                <a href="#" class="acc-sidebar-link">
+                    <i data-lucide="camera" class="w-5 h-5 mr-3"></i> Photos
+                </a>
+                <a href="#" class="acc-sidebar-link">
+                    <i data-lucide="message-square" class="w-5 h-5 mr-3"></i> DDI (RFI)
+                </a>
+                <a href="#" class="acc-sidebar-link">
+                    <i data-lucide="send" class="w-5 h-5 mr-3"></i> Soumissions
+                </a>
+                <a href="#" class="acc-sidebar-link">
+                    <i data-lucide="users" class="w-5 h-5 mr-3"></i> Réunions
+                </a>
+                <a href="#" class="acc-sidebar-link">
+                    <i data-lucide="mail-open" class="w-5 h-5 mr-3"></i> Correspondance
+                </a>
+                 <div class="acc-sidebar-title">Ressources</div>
+                <a href="#" class="acc-sidebar-link">
+                    <i data-lucide="clock" class="w-5 h-5 mr-3"></i> Chronogramme
+                </a>
+                <a href="#" class="acc-sidebar-link">
+                    <i data-lucide="database" class="w-5 h-5 mr-3"></i> Actifs (Assets)
+                </a>
+                <a href="#" class="acc-sidebar-link">
+                    <i data-lucide="file-text" class="w-5 h-5 mr-3"></i> Rapports
+                </a>
+            </div>
+
+            <!-- Contenu Principal ACC Simulé (TRADUCTION) -->
+            <div class="acc-main-content">
+                <h1 class="text-3xl font-light text-gray-800 mb-10">
+                    <!-- Mise à jour pour afficher le nom de l'utilisateur/entreprise connecté -->
+                    Bienvenue, <span id="acc-welcome-name">EXPERT BIM/ENTREPRISE</span>
+                </h1>
+                <p class="text-gray-500 mb-8">
+                    Ceci est un environnement de collaboration simulé pour le projet : <span id="acc-project-name" class="font-bold text-acc-blue">NOM DU PROJET</span>.
+                </p>
+
+                <!-- Disposition des widgets simulée -->
+                <div class="grid lg:grid-cols-3 gap-6 mt-6">
+                    <!-- Avancement Projet -->
+                    <div class="lg:col-span-2 p-6 bg-white rounded-lg shadow-md border border-gray-200">
+                        <h2 class="text-xl font-semibold mb-4 text-gray-800">Avancement du projet</h2>
+                        <div class="h-48 flex flex-col items-center justify-center text-center text-gray-500 bg-gray-50 border border-dashed border-gray-300 rounded-lg">
+                            <i data-lucide="calendar-off" class="w-8 h-8 mb-2"></i>
+                            <p>Chronologie du projet non configurée</p>
+                            <p class="text-sm mt-1">Ajoutez les dates et les objectifs intermédiaires pour activer la chronologie.</p>
+                            <button class="text-acc-blue text-sm mt-3 hover:underline">Ajouter des dates</button>
+                        </div>
+                    </div>
+
+                    <!-- Activité Récente -->
+                    <div class="p-6 bg-white rounded-lg shadow-md border border-gray-200">
+                        <h2 class="text-xl font-semibold mb-4 text-gray-800">Activité récente</h2>
+                        <div class="space-y-4">
+                            <div class="flex items-start">
+                                <i data-lucide="clock" class="w-5 h-5 mr-3 text-gray-400 mt-1"></i>
+                                <div>
+                                    <p class="text-sm font-semibold text-gray-700">
+                                        <!-- Mise à jour pour utiliser le nom de l'Expert/Entreprise -->
+                                        <span id="acc-actor-name" class="font-bold">EXPERT/ENTREPRISE</span> a créé le projet <span id="acc-project-name-activity" class="text-acc-blue"></span>.
+                                    </p>
+                                    <p class="text-xs text-gray-500">6 Nov 2025 à 11:49 AM</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <i data-lucide="check-circle" class="w-5 h-5 mr-3 text-green-500 mt-1"></i>
+                                <div>
+                                    <p class="text-sm text-gray-700">
+                                        Fin de l'activité.
+                                    </p>
+                                    <p class="text-xs text-gray-500">10 Nov 2025</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Collègue Rapide -->
+                    <div class="p-6 bg-white rounded-lg shadow-md border border-gray-200">
+                        <h2 class="text-xl font-semibold mb-4 text-gray-800">Liens rapides</h2>
+                        <div class="flex space-x-6 text-center">
+                            <div>
+                                <i data-lucide="file-plus" class="w-8 h-8 text-gray-500 mx-auto mb-1"></i>
+                                <p class="text-2xl font-bold text-gray-800">0</p>
+                                <p class="text-sm text-gray-500">Modèles 3D</p>
+                            </div>
+                            <div>
+                                <i data-lucide="users" class="w-8 h-8 text-gray-500 mx-auto mb-1"></i>
+                                <p class="text-2xl font-bold text-gray-800">6</p>
+                                <p class="text-sm text-gray-500">Collaborateurs</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Meteo Site -->
+                     <div class="p-6 bg-white rounded-lg shadow-md border border-gray-200">
+                        <h2 class="text-xl font-semibold mb-4 text-gray-800">Météo du site</h2>
+                        <div class="h-16 flex flex-col items-center justify-center text-center text-gray-500">
+                            <i data-lucide="map-pin" class="w-6 h-6 mb-1"></i>
+                            <p>Aucune adresse de projet définie.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script JavaScript pour la navigation et l'affichage des icônes -->
+    <script>
+        // Variables globales pour simuler l'utilisateur/entreprise connecté
+        let currentUserName = '';
+        let currentUserType = '';
+        let lastPrivateScreen = '';
+
+        // Fonction pour afficher l'écran de sélection de connexion (NOUVELLE FONCTION)
+        function showLoginSelection() {
+            showScreen('login-selection');
+        }
+        
+        // Fonction pour afficher un écran et masquer les autres
+        function showScreen(screenId) {
+            // Masquer tous les écrans
+            document.querySelectorAll('.page-screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            // Afficher l'écran demandé
+            const targetScreen = document.getElementById(`screen-${screenId}`);
+            if (targetScreen) {
+                targetScreen.classList.add('active');
+            }
+
+            // Mettre à jour la classe "active-link" dans la navigation AS2Built
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active-link');
+                if (link.getAttribute('data-screen') === screenId) {
+                    link.classList.add('active-link');
+                }
+            });
+
+            // Masquer le menu mobile après la sélection
+            document.getElementById('mobile-menu').classList.add('hidden');
+            
+             // Important: Créer à nouveau les icônes Lucide pour le nouveau contenu visible
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+            
+            // Afficher les détails des événements du calendrier si un jour est cliqué
+            setupCalendarEvents();
+        }
+
+        // Fonction pour afficher le contenu d'un onglet privé (Entreprise ou Expert ou Admin)
+        function showPrivateScreen(userType, tabId) {
+            lastPrivateScreen = userType; // Enregistrer le type d'utilisateur pour le retour
+            
+            // Déterminer l'ID du tableau de bord
+            const dashboardId = `screen-dashboard-${userType}`;
+            
+            // 1. Mettre à jour les boutons d'onglet
+            const tabButtons = document.querySelectorAll(`#${dashboardId} .tab-button`);
+            tabButtons.forEach(button => {
+                button.classList.remove('active');
+                button.classList.remove('admin-active'); // Nettoyer les classes spécifiques
+            });
+
+            const activeTabButton = Array.from(tabButtons).find(button =>
+                button.getAttribute('onclick').includes(`'${tabId}'`)
+            );
+            if (activeTabButton) {
+                activeTabButton.classList.add('active');
+                if (userType === 'admin') {
+                    activeTabButton.classList.add('admin-active');
+                }
+            }
+
+            // 2. Mettre à jour le contenu de l'onglet
+            document.querySelectorAll(`#${dashboardId} .tab-content`).forEach(content => {
+                content.classList.remove('active');
+            });
+
+            const targetContent = document.getElementById(`content-${userType}-${tabId}`);
+            if (targetContent) {
+                targetContent.classList.add('active');
+            }
+
+            // 3. Assurer que le tableau de bord principal est actif
+            showScreen(`dashboard-${userType}`);
+        }
+
+        // Fonction de filtrage des projets/missions
+        function filterProjects(userType) {
+            const input = document.getElementById(`filter-${userType}-projects`);
+            const filterText = input.value.toLowerCase();
+            const projectList = document.getElementById(`list-${userType}-projects`);
+            // Mise à jour pour rechercher tous les liens (a) dans la liste, même s'ils sont dans des sous-divs
+            const links = projectList.querySelectorAll('a.project-link');
+
+            for (let i = 0; i < links.length; i++) {
+                const link = links[i];
+                const searchData = link.getAttribute('data-search').toLowerCase();
+                
+                if (searchData.includes(filterText)) {
+                    link.style.display = "block"; // Afficher l'élément
+                } else {
+                    link.style.display = "none"; // Masquer l'élément
+                }
+            }
+        }
+
+        // Nouvelle fonction pour simuler l'interface ACC
+        function simulateACC(projectName) {
+            // Mettre à jour le nom du projet dans la simulation
+            document.getElementById('acc-project-name').textContent = projectName;
+            document.getElementById('acc-project-name-activity').textContent = projectName;
+            
+            // Mettre à jour les noms de l'utilisateur/entreprise dans l'interface ACC
+            document.getElementById('acc-welcome-name').textContent = currentUserName;
+            document.getElementById('acc-actor-name').textContent = currentUserName;
+
+            // Afficher l'écran de simulation ACC
+            showScreen('acc-simulation');
+        }
+
+        // Fonction pour retourner au tableau de bord après la simulation
+        function showDashboardReturn() {
+            // lastPrivateScreen contient 'enterprise', 'expert' ou 'admin'
+            if (lastPrivateScreen) {
+                // Pour Admin, on revient aux stats. Pour les autres, aux projets.
+                const defaultTab = lastPrivateScreen === 'admin' ? 'stats' : 'projects';
+                showPrivateScreen(lastPrivateScreen, defaultTab);
+            } else {
+                 // Si on n'a pas pu déterminer l'espace, retour à l'accueil
+                 showScreen('home');
+            }
+        }
+
+        // Fonction pour afficher les détails du calendrier (remplace alert)
+        function setupCalendarEvents() {
+            document.querySelectorAll('.calendar-day-box.event').forEach(day => {
+                // Suppression des listeners existants pour éviter les duplications
+                day.removeEventListener('click', handleCalendarClick);
+                // Ajout du nouveau listener
+                day.addEventListener('click', handleCalendarClick);
+            });
+        }
+        
+        function handleCalendarClick(event) {
+            const day = event.currentTarget;
+            const eventTitle = day.getAttribute('title');
+            const dayNumber = day.textContent.trim().split(' ')[0]; // Récupère le numéro du jour
+            const monthYear = 'Novembre 2025';
+            
+            // Simuler une boîte de dialogue d'information customisée
+            showMessage(`Détails de l'événement du ${dayNumber} ${monthYear}: ${eventTitle}`, 'calendar');
+        }
+
+
+        // Fonction spécifique pour afficher l'écran de connexion
+        function showLogin(type) {
+            showScreen('login');
+            const loginTitle = document.getElementById('login-title');
+            const loginType = document.getElementById('login-type');
+            const demoText = document.getElementById('login-demo-text');
+            const emailInput = document.getElementById('login-email');
+
+            let typeText;
+            let demoMsg;
+
+            if (type === 'enterprise') {
+                typeText = 'Entreprise';
+                loginTitle.classList.remove('text-as2-red-admin');
+                loginTitle.classList.add('text-as2-blue');
+                demoMsg = 'Utilisez ing@ask.com (Entreprise) ou ali.cherif@expert.com (Expert) pour la démo. Mot de passe: 123456';
+                emailInput.value = 'ing@ask.com';
+            } else if (type === 'expert') {
+                typeText = 'Expert BIM';
+                loginTitle.classList.remove('text-as2-red-admin');
+                loginTitle.classList.add('text-as2-blue');
+                demoMsg = 'Utilisez ing@ask.com (Entreprise) ou ali.cherif@expert.com (Expert) pour la démo. Mot de passe: 123456';
+                emailInput.value = 'ali.cherif@expert.com';
+            } else if (type === 'admin') {
+                typeText = 'Administrateur (Back-Office)';
+                loginTitle.classList.remove('text-as2-blue');
+                loginTitle.classList.add('text-as2-red-admin');
+                demoMsg = 'Utilisez admin@as2built.com pour la démo du Back-Office. Mot de passe: 123456';
+                emailInput.value = 'admin@as2built.com';
+            }
+
+            loginTitle.textContent = `Connexion ${typeText}`;
+            loginType.textContent = typeText;
+            demoText.textContent = demoMsg;
+
+            // Ajouter le listener pour la soumission du formulaire de connexion
+            document.getElementById('login-form').onsubmit = (event) => {
+                event.preventDefault();
+                showDashboard(type); // Rediriger vers le tableau de bord après connexion
+            };
+        }
+
+        // Fonction pour simuler la connexion et rediriger vers le tableau de bord
+        function showDashboard(type) {
+            // Définir les noms simulés ici
+            let name;
+            let targetScreen;
+
+            if (type === 'enterprise') {
+                name = 'ASK spa';
+                targetScreen = 'dashboard-enterprise';
+            } else if (type === 'expert') {
+                name = 'M. Ali Cherif';
+                targetScreen = 'dashboard-expert';
+            } else if (type === 'admin') {
+                 name = 'Super Admin';
+                 targetScreen = 'dashboard-admin';
+            }
+
+            currentUserName = name;
+            currentUserType = type; // 'enterprise' ou 'expert' ou 'admin'
+
+            // Mettre à jour les messages de bienvenue dans les tableaux de bord
+            if (type === 'enterprise') {
+                document.getElementById('welcome-enterprise').textContent = name;
+            } else if (type === 'expert') {
+                document.getElementById('welcome-expert').textContent = name;
+            }
+            // Le dashboard admin n'a pas de message de bienvenue personnalisé
+
+            showMessage(`Connexion réussie! Bienvenue, ${name}.`);
+
+            // Afficher l'écran du tableau de bord correspondant (par défaut, l'onglet 'dashboard'/'stats' sera actif)
+            const defaultTab = type === 'admin' ? 'stats' : 'dashboard';
+            showPrivateScreen(type, defaultTab);
+        }
+
+        // Fonction d'affichage du message box customisé (remplace alert())
+        function showMessage(message, type = 'success') {
+            // Utiliser une boîte modale simple pour le calendrier afin de ne pas interférer avec le flux
+            if (type === 'calendar') {
+                const modalMessage = `
+                    <div id="calendar-modal" class="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-[100]">
+                        <div class="bg-as2-dark-light p-6 rounded-lg shadow-2xl max-w-sm w-full border border-as2-blue">
+                            <h3 class="text-xl font-bold text-as2-blue mb-3">Événement du Calendrier</h3>
+                            <p class="text-gray-300 mb-4">${message}</p>
+                            <button onclick="document.getElementById('calendar-modal').remove()" class="w-full bg-as2-blue text-white font-bold py-2 rounded-lg hover:bg-as2-blue-dark transition-colors">
+                                OK
+                            </button>
+                        </div>
+                    </div>
+                `;
+                document.body.insertAdjacentHTML('beforeend', modalMessage);
+                return;
+            }
+
+            // Logique pour la boîte de message standard (contact form, login success)
+            const msgBox = document.getElementById('message-box');
+            const contactMsgBox = document.querySelector('#screen-contact #message-box');
+            const currentMsgBox = contactMsgBox || document.createElement('div'); 
+
+            currentMsgBox.textContent = message;
+            currentMsgBox.classList.remove('hidden');
+            currentMsgBox.classList.remove('bg-red-900/50', 'text-red-300'); 
+            currentMsgBox.classList.add('bg-green-900/50', 'text-green-300'); 
+
+            if(contactMsgBox) {
+                setTimeout(() => {
+                    contactMsgBox.classList.add('hidden');
+                }, 5000);
+            }
+        }
+
+        // Initialisation à l'écran d'accueil et des icônes
+        window.onload = () => {
+            // Activer l'écran d'accueil par défaut et le lien actif
+            showScreen('home');
+
+            // Initialiser les icônes Lucide
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        };
+
+        // Gestion du menu mobile
+        document.getElementById('mobile-menu-button').addEventListener('click', () => {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        });
+        
+        // Assurer que le calendrier est interactif au chargement initial
+        document.addEventListener('DOMContentLoaded', setupCalendarEvents);
+    </script>
+
+    <!-- Footer -->
+    <footer class="bg-as2-dark-light border-t border-gray-800 mt-12 py-6 text-center text-sm text-gray-500">
+        <p>&copy; 2025 AS2Built. Tous droits réservés. Prototype BIM Hub Algérie.</p>
+    </footer>
+
+</body>
+</html>
